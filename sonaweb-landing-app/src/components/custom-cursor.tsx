@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react'
-import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion'
+import { motion, AnimatePresence, useMotionValue, useSpring } from 'motion/react'
 
 type CursorState = {
   active: boolean
@@ -26,7 +26,7 @@ export function useCustomCursor() {
 export function CustomCursorProvider({ children }: { children: ReactNode }) {
   const mouseX = useMotionValue(-100)
   const mouseY = useMotionValue(-100)
-  
+
   const smoothX = useSpring(mouseX, { damping: 24, stiffness: 350, mass: 0.1 })
   const smoothY = useSpring(mouseY, { damping: 24, stiffness: 350, mass: 0.1 })
 
@@ -34,23 +34,20 @@ export function CustomCursorProvider({ children }: { children: ReactNode }) {
   const [label, setLabel] = useState('')
   const [visible, setVisible] = useState(false)
 
-  // ── 1. KÉSLELTETÉS REFERENCIA ──
+  // KÉSLELTETÉS REFERENCIA
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const setCursor = useCallback((state: CursorState) => {
-    // 2. Ha épp be akart csukódni (mert a résen voltál), megszakítjuk a folyamatot
     if (timeoutRef.current) clearTimeout(timeoutRef.current)
     setActive(state.active)
     setLabel(state.label)
   }, [])
 
   const clearCursor = useCallback(() => {
-    // 3. Nem csukjuk be azonnal! Várunk 100ms-ot. 
-    // Ha közben átérsz a következő képre, a setCursor megszakítja ezt az időzítőt.
     timeoutRef.current = setTimeout(() => {
       setActive(false)
       setLabel('')
-    }, 100) 
+    }, 100)
   }, [])
 
   useEffect(() => {
@@ -61,10 +58,12 @@ export function CustomCursorProvider({ children }: { children: ReactNode }) {
       mouseY.set(e.clientY)
       if (!visible) setVisible(true)
     }
+
     const hide = () => setVisible(false)
 
     window.addEventListener('mousemove', move)
     window.addEventListener('mouseleave', hide)
+
     return () => {
       window.removeEventListener('mousemove', move)
       window.removeEventListener('mouseleave', hide)
@@ -74,10 +73,10 @@ export function CustomCursorProvider({ children }: { children: ReactNode }) {
   return (
     <CursorContext.Provider value={{ setCursor, clearCursor }}>
       {children}
-
       <motion.div
         aria-hidden
-        className="pointer-events-none fixed left-0 top-0 z-[99999] hidden md:block"
+        // HOZZÁADVA: mix-blend-difference
+        className="pointer-events-none fixed left-0 top-0 z-[99999] hidden md:block mix-blend-difference"
         style={{
           x: smoothX,
           y: smoothY,
@@ -92,17 +91,19 @@ export function CustomCursorProvider({ children }: { children: ReactNode }) {
           animate={{
             width: active ? 112 : 12,
             height: active ? 112 : 12,
-            backgroundColor: '#BF2234',
-            color: active ? '#F4F2F0' : 'transparent',
+            // FEHÉR kurzor háttér (ami a mix-blend miatt inverz színt kap)
+            backgroundColor: '#FFFFFF',
+            // FEKETE szöveg (ami a mix-blend miatt átlátszó/inverz hatású lesz) - JAVÍTVA #0A0A0A-ra
+            color: active ? '#0A0A0A' : 'transparent',
           }}
           style={{
-            willChange: 'width, height, background-color', 
+            willChange: 'width, height, background-color',
           }}
-          transition={{ 
-            type: "spring", 
-            stiffness: 300, 
-            damping: 25, 
-            mass: 0.5 
+          transition={{
+            type: "spring",
+            stiffness: 300,
+            damping: 25,
+            mass: 0.5
           }}
         >
           <AnimatePresence mode="wait">
@@ -112,10 +113,10 @@ export function CustomCursorProvider({ children }: { children: ReactNode }) {
                 initial={{ opacity: 0, y: 8, scale: 0.9 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -8, scale: 0.9 }}
-                transition={{ 
-                  type: "spring", 
-                  stiffness: 400, 
-                  damping: 30 
+                transition={{
+                  type: "spring",
+                  stiffness: 400,
+                  damping: 30
                 }}
                 className="px-2 whitespace-nowrap"
               >

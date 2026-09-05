@@ -50,7 +50,6 @@ export function Navbar() {
   const [isHidden, setIsHidden] = useState(false)
   const { scrollY } = useScroll()
 
-  // Témafigyelő eltávolítva, csak a görgetés-alapú elrejtés maradt
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0
     if (latest > previous && latest > 150) {
@@ -173,11 +172,9 @@ export function Navbar() {
         initial={{ y: -40, opacity: 0 }}
         animate={isHidden && !isOpen ? { y: '-100%', opacity: 0 } : { y: 0, opacity: 1 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        // Hozzáadva a mix-blend-difference, amivel minden belső elem inverz lesz
         className="fixed inset-x-0 top-6 z-[70] w-full mix-blend-difference md:top-8"
       >
         <div className={`${CONTAINER} flex items-center justify-between`}>
-          
           <Link
             href="/"
             aria-label="SONAWEB home"
@@ -193,7 +190,6 @@ export function Navbar() {
               }
             }}
           >
-            {/* Mindig a fehér logót használjuk, a blend mode megoldja a színezést */}
             <img
               src="/sonaweb-logo-white.png"
               alt="SONAWEB"
@@ -208,25 +204,39 @@ export function Navbar() {
                   key={link.title}
                   href={link.href}
                   onClick={(e) => link.sectionId ? handleSectionLink(e, link.sectionId) : handlePageLink(e, link.href)}
-                  // Alapból fehér szöveg, hoverre finoman elhalványul
-                  className="flex items-center gap-1.5 font-inter text-[14px] leading-[14px] tracking-[-0.4px] !font-semibold uppercase text-white transition-opacity duration-300 hover:opacity-70"
+                  className="group flex items-center font-inter text-[14px] leading-[14px] tracking-[-0.4px] !font-semibold uppercase text-white"
                 >
-                  {link.title}
-                  {link.hasArrow && <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />}
+                  {/* TEXT ROLL EFFEKTUS (Szöveg + Ikon együtt) */}
+                  <span className="relative inline-flex overflow-hidden">
+                    <span className="flex items-center gap-1.5 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
+                      {link.title}
+                      {link.hasArrow && <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />}
+                    </span>
+                    <span className="absolute left-0 flex items-center gap-1.5 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                      {link.title}
+                      {link.hasArrow && <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />}
+                    </span>
+                  </span>
                 </Link>
               ))}
             </div>
 
             <button
               onClick={toggleMenu}
-              // Fehér háttér, fekete szöveg. A blend mode miatt világos háttéren ez megfordul.
-              className="md:hidden flex shrink-0 items-center justify-center rounded-full bg-white px-6 py-2.5 font-inter text-xs font-bold tracking-wide text-black transition-transform duration-500 hover:scale-105 focus:outline-none"
+              className="group md:hidden flex shrink-0 items-center justify-center rounded-full bg-white px-6 py-2.5 font-inter text-xs font-bold tracking-wide text-[#0A0A0A] focus:outline-none"
               aria-label="Toggle menu"
             >
-              {isOpen ? 'Bezár' : 'Menü'}
+              {/* TEXT ROLL EFFEKTUS A MOBIL GOMBON IS */}
+              <span className="relative inline-flex overflow-hidden">
+                <span className="transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
+                  {isOpen ? 'Bezár' : 'Menü'}
+                </span>
+                <span className="absolute left-0 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                  {isOpen ? 'Bezár' : 'Menü'}
+                </span>
+              </span>
             </button>
           </div>
-          
         </div>
       </motion.header>
 
@@ -255,7 +265,7 @@ export function Navbar() {
                       <motion.span
                         custom={i}
                         variants={linkVariants}
-                        className={`block w-full text-center font-display text-[clamp(1.15rem,6.5vw,5.5rem)] font-black uppercase leading-tight tracking-[-0.02em] transition-colors duration-300 whitespace-nowrap ${hoveredLink === null || hoveredLink === i ? 'text-[#F4F2F0]' : 'text-[#333333]'
+                        className={`block w-full text-center font-display text-[clamp(1.15rem,6.5vw,5.5rem)] font-black uppercase leading-tight tracking-[-0.02em] transition-colors duration-300 whitespace-nowrap ${hoveredLink === null || hoveredLink === i ? 'text-white' : 'text-[#333333]'
                           }`}
                       >
                         {link.title}
@@ -272,14 +282,15 @@ export function Navbar() {
                 <Link
                   href="/client"
                   onClick={(e) => handlePageLink(e, '/client')}
-                  className="font-inter text-sm font-medium tracking-wide text-[#9E9A98] underline decoration-[#9E9A98]/40 underline-offset-4 transition-colors duration-300 hover:text-[#F4F2F0] hover:decoration-[#F4F2F0]"
+                  className="font-inter text-sm font-medium tracking-wide text-[#9E9A98] underline decoration-transparent underline-offset-4 transition-colors duration-300 hover:text-white hover:decoration-white"
                 >
                   Ügyfélportál bejelentkezés
                 </Link>
+
                 <div className="flex items-center gap-6 font-inter text-sm font-medium tracking-wide text-[#9E9A98]">
-                  <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="transition-colors duration-300 hover:text-[#F4F2F0]">Facebook</a>
-                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="transition-colors duration-300 hover:text-[#F4F2F0]">Instagram</a>
-                  <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="transition-colors duration-300 hover:text-[#F4F2F0]">TikTok</a>
+                  <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="underline decoration-transparent underline-offset-4 transition-colors duration-300 hover:text-white hover:decoration-white">Facebook</a>
+                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="underline decoration-transparent underline-offset-4 transition-colors duration-300 hover:text-white hover:decoration-white">Instagram</a>
+                  <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="underline decoration-transparent underline-offset-4 transition-colors duration-300 hover:text-white hover:decoration-white">TikTok</a>
                 </div>
               </motion.div>
             </div>
