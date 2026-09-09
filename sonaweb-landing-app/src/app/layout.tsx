@@ -10,6 +10,12 @@ export const metadata: Metadata = {
     template: '%s - SONAWEB',
     default: 'SONAWEB',
   },
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'SONAWEB',
+  }
 }
 
 const clashDisplay = Montserrat({

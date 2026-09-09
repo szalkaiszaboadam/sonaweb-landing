@@ -15,11 +15,24 @@ export function Navbar() {
   const router = useRouter()
   const headerRef = useRef<any>(null)
   const lenis = useLenis()
+  // Megkülönbözteti a valódi (első) betöltést/reloadot a későbbi SPA-navigációtól.
+  // FONTOS: a `lenis` kezdetben null, és csak később áll elő — a useEffect emiatt
+  // kétszer fut le induláskor (egyszer lenis=null-lal, egyszer a kész példánnyal).
+  // A flag-et csak akkor "fogyasztjuk el", amikor a lenis már ténylegesen készen áll,
+  // különben pont az az egy futás csúszna át, ami a hibás scrollt okozta.
+  const hasHandledInitialLoad = useRef(false)
 
   useEffect(() => {
     setIsOpen(false)
     document.body.style.overflow = ''
     document.body.style.paddingRight = ''
+
+    if (!lenis) return
+
+    if (!hasHandledInitialLoad.current) {
+      hasHandledInitialLoad.current = true
+      return
+    }
 
     const handleHashScroll = () => {
       if (!lenis) return
@@ -46,7 +59,6 @@ export function Navbar() {
     }
   }, [pathname, lenis])
 
-  const [hoveredLink, setHoveredLink] = useState<number | null>(null)
   const [isHidden, setIsHidden] = useState(false)
   const { scrollY } = useScroll()
 
@@ -67,7 +79,6 @@ export function Navbar() {
     } else {
       document.body.style.overflow = ''
       document.body.style.paddingRight = ''
-      setHoveredLink(null)
     }
     setIsOpen(!isOpen)
   }
@@ -76,7 +87,6 @@ export function Navbar() {
     document.body.style.overflow = ''
     document.body.style.paddingRight = ''
     setIsOpen(false)
-    setHoveredLink(null)
   }
 
   const handlePageLink = (e: React.MouseEvent, href: string) => {
@@ -145,24 +155,19 @@ export function Navbar() {
   ]
 
   const drawerVariants = {
-    closed: { y: '-100%', transition: { duration: 0.8, ease: drawerEase, delay: 0.35 } },
+    closed: { y: '-100%', transition: { duration: 0.8, ease: drawerEase, delay: 0.2 } },
     opened: { y: '0%', transition: { duration: 0.8, ease: drawerEase } }
   }
 
   const linkVariants = {
     closed: (i: number) => ({
-      y: '120%', opacity: 0,
-      transition: { duration: 0.5, ease: drawerEase, delay: (navLinks.length - 1 - i) * 0.05 }
+      y: '100%', opacity: 0,
+      transition: { duration: 0.4, ease: drawerEase }
     }),
     opened: (i: number) => ({
       y: '0%', opacity: 1,
-      transition: { duration: 0.8, ease: textEase, delay: 0.4 + i * 0.08 }
+      transition: { duration: 0.6, ease: textEase, delay: 0.25 + i * 0.08 }
     })
-  }
-
-  const bottomVariants = {
-    closed: { y: 40, opacity: 0, transition: { duration: 0.4, ease: drawerEase, delay: 0 } },
-    opened: { y: 0, opacity: 1, transition: { duration: 0.8, ease: textEase, delay: 0.8 } }
   }
 
   return (
@@ -175,6 +180,7 @@ export function Navbar() {
         className="fixed inset-x-0 top-6 z-[70] w-full mix-blend-difference md:top-8"
       >
         <div className={`${CONTAINER} flex items-center justify-between`}>
+          
           <Link
             href="/"
             aria-label="SONAWEB home"
@@ -197,46 +203,45 @@ export function Navbar() {
             />
           </Link>
 
-          <div className="flex items-center">
-            <div className="hidden md:flex items-center gap-7 mr-6">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.title}
-                  href={link.href}
-                  onClick={(e) => link.sectionId ? handleSectionLink(e, link.sectionId) : handlePageLink(e, link.href)}
-                  className="group flex items-center font-inter text-[14px] leading-[14px] tracking-[-0.4px] !font-semibold uppercase text-white"
-                >
-                  {/* TEXT ROLL EFFEKTUS (Szöveg + Ikon együtt) */}
-                  <span className="relative inline-flex overflow-hidden">
-                    <span className="flex items-center gap-1.5 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
-                      {link.title}
-                      {link.hasArrow && <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />}
-                    </span>
-                    <span className="absolute left-0 flex items-center gap-1.5 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-                      {link.title}
-                      {link.hasArrow && <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />}
-                    </span>
+          <div className="hidden md:flex items-center gap-8">
+            {navLinks.map((link) => (
+              <Link
+                key={link.title}
+                href={link.href}
+                onClick={(e) => link.sectionId ? handleSectionLink(e, link.sectionId) : handlePageLink(e, link.href)}
+                className="group flex items-center font-inter text-[14px] !font-semibold uppercase text-white"
+              >
+                {/* Asztali linkek: padding és line-height fix az ékezeteknek, inset-0 pozicionálás */}
+                <span className="relative inline-flex overflow-hidden py-1.5 leading-normal">
+                  <span className="flex items-center gap-1.5 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
+                    {link.title}
+                    {link.hasArrow && <ArrowUpRight className="h-[1.2em] w-[1.2em]" strokeWidth={3} />}
                   </span>
-                </Link>
-              ))}
-            </div>
-
-            <button
-              onClick={toggleMenu}
-              className="group md:hidden flex shrink-0 items-center justify-center rounded-full bg-white px-6 py-2.5 font-inter text-xs font-bold tracking-wide text-[#0A0A0A] focus:outline-none"
-              aria-label="Toggle menu"
-            >
-              {/* TEXT ROLL EFFEKTUS A MOBIL GOMBON IS */}
-              <span className="relative inline-flex overflow-hidden">
-                <span className="transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
-                  {isOpen ? 'Bezár' : 'Menü'}
+                  <span className="absolute inset-0 flex items-center gap-1.5 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                    {link.title}
+                    {link.hasArrow && <ArrowUpRight className="h-[1.2em] w-[1.2em]" strokeWidth={3} />}
+                  </span>
                 </span>
-                <span className="absolute left-0 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-                  {isOpen ? 'Bezár' : 'Menü'}
-                </span>
-              </span>
-            </button>
+              </Link>
+            ))}
           </div>
+
+          <button
+            onClick={toggleMenu}
+            className="group md:hidden flex shrink-0 items-center font-inter text-[14px] !font-semibold uppercase text-white focus:outline-none"
+            aria-label="Toggle menu"
+          >
+            {/* Mobil Menü Gomb: Explicit BEZÁR / MENÜ szöveg és padding fix */}
+            <span className="relative inline-flex overflow-hidden py-1.5 leading-normal">
+              <span className="flex items-center transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
+                {isOpen ? 'BEZÁR' : 'MENÜ'}
+              </span>
+              <span className="absolute inset-0 flex items-center translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                {isOpen ? 'BEZÁR' : 'MENÜ'}
+              </span>
+            </span>
+          </button>
+          
         </div>
       </motion.header>
 
@@ -247,52 +252,32 @@ export function Navbar() {
             initial="closed"
             animate="opened"
             exit="closed"
-            className="md:hidden fixed inset-0 z-[60] flex h-[100dvh] w-screen flex-col items-center justify-center overflow-hidden bg-[#0A0A0A] touch-none"
+            className="md:hidden fixed inset-0 z-[60] flex h-[100dvh] w-screen flex-col items-start bg-[#0A0A0A] px-6 pt-32 touch-none"
           >
-            <div className="relative flex h-full w-full flex-col items-center justify-center px-6">
-              <div
-                className="flex w-full flex-col items-center justify-center gap-2 md:gap-4"
-                onMouseLeave={() => setHoveredLink(null)}
-              >
-                {navLinks.map((link, i) => (
-                  <div key={link.title} className="w-full overflow-hidden px-4 pb-2 pt-1 text-center">
+            <div className="flex w-full flex-col items-start gap-2">
+              {navLinks.map((link, i) => (
+                <div key={link.title} className="overflow-hidden w-full">
+                  <motion.div custom={i} variants={linkVariants}>
                     <Link
                       href={link.href}
-                      className="block w-full"
+                      className="group flex w-full items-start py-2 text-left"
                       onClick={(e) => link.sectionId ? handleSectionLink(e, link.sectionId) : handlePageLink(e, link.href)}
-                      onMouseEnter={() => setHoveredLink(i)}
                     >
-                      <motion.span
-                        custom={i}
-                        variants={linkVariants}
-                        className={`block w-full text-center font-display text-[clamp(1.15rem,6.5vw,5.5rem)] font-black uppercase leading-tight tracking-[-0.02em] transition-colors duration-300 whitespace-nowrap ${hoveredLink === null || hoveredLink === i ? 'text-white' : 'text-[#333333]'
-                          }`}
-                      >
-                        {link.title}
-                      </motion.span>
+                      {/* Mobil linkek: leading-tight és py-2 az ékezetek védelmére, inset-0 pozíció */}
+                      <span className="relative inline-flex w-full overflow-hidden py-2 font-display text-[clamp(2rem,7vw,3.5rem)] font-extrabold uppercase leading-tight tracking-[-1.5px] text-white">
+                        <span className="flex items-center gap-3 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
+                          {link.title}
+                          {link.hasArrow && <ArrowUpRight className="h-[0.9em] w-[0.9em] text-white" strokeWidth={3} />}
+                        </span>
+                        <span className="absolute inset-0 flex items-center gap-3 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                          {link.title}
+                          {link.hasArrow && <ArrowUpRight className="h-[0.9em] w-[0.9em] text-white" strokeWidth={3} />}
+                        </span>
+                      </span>
                     </Link>
-                  </div>
-                ))}
-              </div>
-
-              <motion.div
-                variants={bottomVariants}
-                className="absolute bottom-10 left-0 flex w-full flex-col-reverse items-center justify-between gap-6 px-6 md:bottom-12 md:flex-row md:px-12"
-              >
-                <Link
-                  href="/client"
-                  onClick={(e) => handlePageLink(e, '/client')}
-                  className="font-inter text-sm font-medium tracking-wide text-[#9E9A98] underline decoration-transparent underline-offset-4 transition-colors duration-300 hover:text-white hover:decoration-white"
-                >
-                  Ügyfélportál bejelentkezés
-                </Link>
-
-                <div className="flex items-center gap-6 font-inter text-sm font-medium tracking-wide text-[#9E9A98]">
-                  <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="underline decoration-transparent underline-offset-4 transition-colors duration-300 hover:text-white hover:decoration-white">Facebook</a>
-                  <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="underline decoration-transparent underline-offset-4 transition-colors duration-300 hover:text-white hover:decoration-white">Instagram</a>
-                  <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="underline decoration-transparent underline-offset-4 transition-colors duration-300 hover:text-white hover:decoration-white">TikTok</a>
+                  </motion.div>
                 </div>
-              </motion.div>
+              ))}
             </div>
           </motion.nav>
         )}

@@ -13,9 +13,8 @@ interface FooterProps {
 
 export function Footer({ variant = 'default', className = '' }: FooterProps) {
   const isMinimal = variant === 'minimal'
-  const baseClasses = className || 'relative w-full bg-[#BF2234] overflow-hidden z-0'
+  const baseClasses = className || 'relative w-full bg-[#FF1A1A] overflow-hidden z-0'
   
-  // Függöny (Curtain Reveal) hatás figyelése
   const footerRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: footerRef,
@@ -28,137 +27,133 @@ export function Footer({ variant = 'default', className = '' }: FooterProps) {
     <footer ref={footerRef} className={baseClasses}>
       <motion.div 
         style={!isMinimal ? { y } : {}}
-        className={`w-full relative ${isMinimal ? 'py-6' : 'pt-6 pb-6 md:pt-8 md:pb-8'}`}
+        // 1. TÁVOLSÁG (Legfelül és Legalul): Egységes pt-5/pb-5 (mobilon 4)
+        className={`w-full relative ${isMinimal ? 'py-4' : 'pt-4 pb-4 md:pt-5 md:pb-5'}`}
       >
         <div className={`${CONTAINER} flex flex-col relative z-10`}>
           
-          {/* 1. INFORMÁCIÓK */}
-          <div className={`w-full flex flex-col lg:flex-row items-center justify-between gap-6 mb-6 md:mb-8 ${isMinimal ? 'mb-0' : ''}`}>
+          {/* INFORMÁCIÓK */}
+          {/* 2. TÁVOLSÁG (Linkek alatt): Egységes mb-5 (mobilon 4) */}
+          <div className={`w-full flex flex-col lg:flex-row items-center justify-between gap-6 ${isMinimal ? 'mb-0' : 'mb-4 md:mb-5'}`}>
             
             {/* Bal oldal: Copyright */}
             <div className="flex shrink-0 items-center">
-              <span className="font-inter text-[13px] tracking-widest font-bold uppercase text-white">
-                SONAWEB © {new Date().getFullYear()}
+              <span className="font-inter text-[13px] tracking-wide font-semibold uppercase text-[#0A0A0A]">
+                © {new Date().getFullYear()} SONAWEB KFT.
               </span>
             </div>
             
-            {/* Jobb oldal: Jogi linkek és Social linkek */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-end gap-6 md:gap-10 font-inter text-[13px] tracking-wide font-semibold uppercase">
+            {/* Középső: Social linkek */}
+            <div className="flex shrink-0 items-center justify-center gap-5 md:gap-8 font-inter text-[13px] tracking-wide font-semibold uppercase">
+              <a href="#" target="_blank" rel="noopener noreferrer" className="group text-[#0A0A0A]">
+                <span className="relative inline-flex overflow-hidden">
+                  <span className="flex items-center gap-2 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
+                    Instagram
+                  </span>
+                  <span className="absolute left-0 flex items-center gap-2 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                    Instagram
+                  </span>
+                </span>
+              </a>
               
-              {/* Szöveges linkek (Jogi): Text Roll effektus */}
-              <div className="flex flex-wrap justify-center gap-5 md:gap-8">
-                <Link href="/legal/privacy-policy" className="group text-white">
-                  <span className="relative inline-flex overflow-hidden">
-                    <span className="transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
-                      Adatkezelési tájékoztató
-                    </span>
-                    <span className="absolute left-0 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-                      Adatkezelési tájékoztató
-                    </span>
+              <a href="#" target="_blank" rel="noopener noreferrer" className="group text-[#0A0A0A]">
+                <span className="relative inline-flex overflow-hidden">
+                  <span className="flex items-center gap-2 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
+                    Facebook
                   </span>
-                </Link>
-                <Link href="/legal/cookie-policy" className="group text-white">
-                  <span className="relative inline-flex overflow-hidden">
-                    <span className="transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
-                      Cookie tájékoztató
-                    </span>
-                    <span className="absolute left-0 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-                      Cookie tájékoztató
-                    </span>
+                  <span className="absolute left-0 flex items-center gap-2 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                    Facebook
                   </span>
-                </Link>
-                <Link href="/legal/imprint" className="group text-white">
-                  <span className="relative inline-flex overflow-hidden">
-                    <span className="transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
-                      Impresszum
-                    </span>
-                    <span className="absolute left-0 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-                      Impresszum
-                    </span>
-                  </span>
-                </Link>
-              </div>
-              
-              {/* Ikon + Szöveges linkek (Közösségi média): Text Roll effektus */}
-              <div className="flex flex-wrap justify-center gap-5 md:gap-8">
-                <a href="#" target="_blank" rel="noopener noreferrer" className="group text-white">
-                  <span className="relative inline-flex overflow-hidden">
-                    <span className="flex items-center gap-2 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
-                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                        <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
-                      </svg>
-                      Instagram
-                    </span>
-                    <span className="absolute left-0 flex items-center gap-2 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
-                        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                        <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
-                      </svg>
-                      Instagram
-                    </span>
-                  </span>
-                </a>
-                
-                <a href="#" target="_blank" rel="noopener noreferrer" className="group text-white">
-                  <span className="relative inline-flex overflow-hidden">
-                    <span className="flex items-center gap-2 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
-                      </svg>
-                      Facebook
-                    </span>
-                    <span className="absolute left-0 flex items-center gap-2 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
-                      </svg>
-                      Facebook
-                    </span>
-                  </span>
-                </a>
-              </div>
+                </span>
+              </a>
+            </div>
 
+            {/* Jobb oldal: Jogi linkek */}
+            <div className="flex shrink-0 items-center justify-end gap-5 md:gap-8 font-inter text-[13px] tracking-wide font-semibold uppercase">
+              <Link href="/legal/privacy-policy" className="group text-[#0A0A0A]">
+                <span className="relative inline-flex overflow-hidden">
+                  <span className="transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
+                    Adatkezelési tájékoztató
+                  </span>
+                  <span className="absolute left-0 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                    Adatkezelési tájékoztató
+                  </span>
+                </span>
+              </Link>
+              <Link href="/legal/cookie-policy" className="group text-[#0A0A0A]">
+                <span className="relative inline-flex overflow-hidden">
+                  <span className="transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
+                    Cookie tájékoztató
+                  </span>
+                  <span className="absolute left-0 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                    Cookie tájékoztató
+                  </span>
+                </span>
+              </Link>
+              <Link href="/legal/imprint" className="group text-[#0A0A0A]">
+                <span className="relative inline-flex overflow-hidden">
+                  <span className="transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
+                    Impresszum
+                  </span>
+                  <span className="absolute left-0 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                    Impresszum
+                  </span>
+                </span>
+              </Link>
             </div>
             
           </div>
 
-          {/* 2. SOLID FEHÉR SZÖVEG */}
+          {/* SOLID FEHÉR SZÖVEG */}
           {!isMinimal && (
             <div className="w-full flex flex-col items-center relative z-0">
               <span className="sr-only">MADE BY GEN Z</span>
-              <div aria-hidden="true" className="w-[104%] -ml-[2%] flex">
+              
+              {/* 3. TÁVOLSÁG (Két sor között): Egységes gap-5 (mobilon 4), az SVG-k most pontosan a szöveghatárig érnek */}
+              <div aria-hidden="true" className="w-[104%] -ml-[2%] flex flex-col gap-4 md:gap-5">
+                
+                {/* 1. Különálló SVG: MADE BY */}
                 <svg 
                   className="w-full h-auto overflow-visible" 
-                  viewBox="0 0 1040 400" 
+                  viewBox="0 0 1040 155" 
                   preserveAspectRatio="xMidYMid meet"
                 >
                   <text 
                     x="20" 
-                    y="160" 
+                    y="150" 
                     textLength="1000" 
                     lengthAdjust="spacingAndGlyphs" 
-                    fill="#FFFFFF" 
+                    fill="#000000" 
                     fontSize="195" 
                     fontWeight="900" 
-                    fontFamily="'Montserrat', sans-serif" 
+                    fontFamily="'Montserrat', sans-serif"
+                    style={{ letterSpacing: '-0.03em', wordSpacing: '-0.06em' }}
                   >
                     MADE BY
                   </text>
+                </svg>
+
+                {/* 2. Különálló SVG: GEN Z */}
+                <svg 
+                  className="w-full h-auto overflow-visible" 
+                  viewBox="0 0 1040 200" 
+                  preserveAspectRatio="xMidYMid meet"
+                >
                   <text 
                     x="20" 
-                    y="380" 
+                    y="195" 
                     textLength="1000" 
                     lengthAdjust="spacingAndGlyphs" 
-                    fill="#FFFFFF" 
+                    fill="#000000" 
                     fontSize="260" 
                     fontWeight="900" 
-                    fontFamily="'Montserrat', sans-serif" 
+                    fontFamily="'Montserrat', sans-serif"
+                    style={{ letterSpacing: '-0.03em', wordSpacing: '-0.06em' }}
                   >
                     GEN Z
                   </text>
                 </svg>
+                
               </div>
             </div>
           )}
