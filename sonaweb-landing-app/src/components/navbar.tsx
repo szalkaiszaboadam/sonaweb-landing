@@ -7,7 +7,10 @@ import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'motion/
 import { useLenis } from 'lenis/react'
 import { ArrowUpRight } from 'lucide-react'
 
-const CONTAINER = 'mx-auto w-full max-w-[1340px] px-6'
+// @/constants/layout.ts (vagy ahol a CONTAINER konstansod definiálva van)
+export const CONTAINER = "mx-auto w-full max-w-[1800px] px-6 sm:px-8 md:px-12 lg:px-20 xl:px-28 2xl:px-36"
+
+
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)

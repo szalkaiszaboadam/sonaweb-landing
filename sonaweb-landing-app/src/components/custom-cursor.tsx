@@ -26,15 +26,12 @@ export function useCustomCursor() {
 export function CustomCursorProvider({ children }: { children: ReactNode }) {
   const mouseX = useMotionValue(-100)
   const mouseY = useMotionValue(-100)
-
   const smoothX = useSpring(mouseX, { damping: 24, stiffness: 350, mass: 0.1 })
   const smoothY = useSpring(mouseY, { damping: 24, stiffness: 350, mass: 0.1 })
-
   const [active, setActive] = useState(false)
   const [label, setLabel] = useState('')
   const [visible, setVisible] = useState(false)
 
-  // KÉSLELTETÉS REFERENCIA
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const setCursor = useCallback((state: CursorState) => {
@@ -51,19 +48,15 @@ export function CustomCursorProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
-    if (window.matchMedia('(pointer: coarse)').matches) return;
-
+    if (window.matchMedia('(pointer: coarse)').matches) return
     const move = (e: globalThis.MouseEvent) => {
       mouseX.set(e.clientX)
       mouseY.set(e.clientY)
       if (!visible) setVisible(true)
     }
-
     const hide = () => setVisible(false)
-
     window.addEventListener('mousemove', move)
     window.addEventListener('mouseleave', hide)
-
     return () => {
       window.removeEventListener('mousemove', move)
       window.removeEventListener('mouseleave', hide)
@@ -75,7 +68,6 @@ export function CustomCursorProvider({ children }: { children: ReactNode }) {
       {children}
       <motion.div
         aria-hidden
-        // HOZZÁADVA: mix-blend-difference
         className="pointer-events-none fixed left-0 top-0 z-[99999] hidden md:block mix-blend-difference"
         style={{
           x: smoothX,
@@ -87,23 +79,21 @@ export function CustomCursorProvider({ children }: { children: ReactNode }) {
         transition={{ opacity: { duration: 0.2 } }}
       >
         <motion.div
-          className="flex items-center justify-center overflow-hidden rounded-full text-center font-inter text-[14px] font-semibold uppercase leading-[14px] tracking-[-0.4px]"
+          /* text-[#0A0A0A] fixen itt van, nincs animációs ütközés */
+          className="flex items-center justify-center overflow-hidden rounded-full text-center font-inter text-[14px] font-semibold uppercase leading-[14px] tracking-[-0.4px] text-[#0A0A0A]"
           animate={{
             width: active ? 112 : 12,
             height: active ? 112 : 12,
-            // FEHÉR kurzor háttér (ami a mix-blend miatt inverz színt kap)
             backgroundColor: '#FFFFFF',
-            // FEKETE szöveg (ami a mix-blend miatt átlátszó/inverz hatású lesz) - JAVÍTVA #0A0A0A-ra
-            color: active ? '#0A0A0A' : 'transparent',
           }}
           style={{
             willChange: 'width, height, background-color',
           }}
           transition={{
-            type: "spring",
+            type: 'spring',
             stiffness: 300,
             damping: 25,
-            mass: 0.5
+            mass: 0.5,
           }}
         >
           <AnimatePresence mode="wait">
@@ -114,9 +104,9 @@ export function CustomCursorProvider({ children }: { children: ReactNode }) {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -8, scale: 0.9 }}
                 transition={{
-                  type: "spring",
+                  type: 'spring',
                   stiffness: 400,
-                  damping: 30
+                  damping: 30,
                 }}
                 className="px-2 whitespace-nowrap"
               >

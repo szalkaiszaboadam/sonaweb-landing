@@ -4,7 +4,8 @@ import Link from 'next/link'
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'motion/react'
 
-const CONTAINER = 'mx-auto w-full max-w-[1340px] px-6'
+// @/constants/layout.ts (vagy ahol a CONTAINER konstansod definiálva van)
+export const CONTAINER = "mx-auto w-full max-w-[1800px] px-6 sm:px-8 md:px-12 lg:px-20 xl:px-28 2xl:px-36"
 
 interface FooterProps {
   variant?: 'default' | 'minimal'
@@ -13,7 +14,7 @@ interface FooterProps {
 
 export function Footer({ variant = 'default', className = '' }: FooterProps) {
   const isMinimal = variant === 'minimal'
-  const baseClasses = className || 'relative w-full bg-[#FF1A1A] overflow-hidden z-0'
+  const baseClasses = className || 'relative w-full bg-[#D90429] overflow-hidden z-0' // #ff1a1a / #d90429 / #bf2234
   
   const footerRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
@@ -32,9 +33,8 @@ export function Footer({ variant = 'default', className = '' }: FooterProps) {
       >
         <div className={`${CONTAINER} flex flex-col relative z-10`}>
           
-          {/* INFORMÁCIÓK */}
-          {/* 2. TÁVOLSÁG (Linkek alatt): Egységes mb-5 (mobilon 4) */}
-          <div className={`w-full flex flex-col lg:flex-row items-center justify-between gap-6 ${isMinimal ? 'mb-0' : 'mb-4 md:mb-5'}`}>
+          {/* 1. INFORMÁCIÓK - Z-index megemelve (z-20), hogy mindig kattintható legyen */}
+          <div className={`relative z-20 w-full flex flex-col lg:flex-row items-center justify-between gap-6 ${isMinimal ? 'mb-0' : 'mb-4 md:mb-5'}`}>
             
             {/* Bal oldal: Copyright */}
             <div className="flex shrink-0 items-center">
@@ -45,23 +45,23 @@ export function Footer({ variant = 'default', className = '' }: FooterProps) {
             
             {/* Középső: Social linkek */}
             <div className="flex shrink-0 items-center justify-center gap-5 md:gap-8 font-inter text-[13px] tracking-wide font-semibold uppercase">
-              <a href="#" target="_blank" rel="noopener noreferrer" className="group text-[#0A0A0A]">
-                <span className="relative inline-flex overflow-hidden">
-                  <span className="flex items-center gap-2 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="group text-[#0A0A0A]">
+                <span className="relative inline-block overflow-hidden leading-tight">
+                  <span className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
                     Instagram
                   </span>
-                  <span className="absolute left-0 flex items-center gap-2 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                  <span className="absolute left-0 top-0 block translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
                     Instagram
                   </span>
                 </span>
               </a>
               
-              <a href="#" target="_blank" rel="noopener noreferrer" className="group text-[#0A0A0A]">
-                <span className="relative inline-flex overflow-hidden">
-                  <span className="flex items-center gap-2 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="group text-[#0A0A0A]">
+                <span className="relative inline-block overflow-hidden leading-tight">
+                  <span className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
                     Facebook
                   </span>
-                  <span className="absolute left-0 flex items-center gap-2 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                  <span className="absolute left-0 top-0 block translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
                     Facebook
                   </span>
                 </span>
@@ -71,31 +71,31 @@ export function Footer({ variant = 'default', className = '' }: FooterProps) {
             {/* Jobb oldal: Jogi linkek */}
             <div className="flex shrink-0 items-center justify-end gap-5 md:gap-8 font-inter text-[13px] tracking-wide font-semibold uppercase">
               <Link href="/legal/privacy-policy" className="group text-[#0A0A0A]">
-                <span className="relative inline-flex overflow-hidden">
-                  <span className="transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
+                <span className="relative inline-block overflow-hidden leading-tight">
+                  <span className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
                     Adatkezelési tájékoztató
                   </span>
-                  <span className="absolute left-0 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                  <span className="absolute left-0 top-0 block translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
                     Adatkezelési tájékoztató
                   </span>
                 </span>
               </Link>
               <Link href="/legal/cookie-policy" className="group text-[#0A0A0A]">
-                <span className="relative inline-flex overflow-hidden">
-                  <span className="transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
+                <span className="relative inline-block overflow-hidden leading-tight">
+                  <span className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
                     Cookie tájékoztató
                   </span>
-                  <span className="absolute left-0 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                  <span className="absolute left-0 top-0 block translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
                     Cookie tájékoztató
                   </span>
                 </span>
               </Link>
               <Link href="/legal/imprint" className="group text-[#0A0A0A]">
-                <span className="relative inline-flex overflow-hidden">
-                  <span className="transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
+                <span className="relative inline-block overflow-hidden leading-tight">
+                  <span className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
                     Impresszum
                   </span>
-                  <span className="absolute left-0 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                  <span className="absolute left-0 top-0 block translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
                     Impresszum
                   </span>
                 </span>
