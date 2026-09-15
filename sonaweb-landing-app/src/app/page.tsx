@@ -266,14 +266,16 @@ export function AboutSection() {
       <div className={CONTAINER}>
         <div className="w-full text-center">
           {/* Eyebrow — halkan futó, ritkított kis felirat a headline felett */}
+
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.5 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-6 block font-inter text-[12px] font-semibold uppercase tracking-[0.35em] text-white/35 md:mb-8 md:text-[13px]"
+            className="mb-6 block font-inter text-[13px] md:text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-white/40 md:mb-8 md:text-[13px]"
+
           >
-            Kreatív stúdió prémium márkáknak
+            Rólunk
           </motion.span>
  
           {/* Headline — soronként külön kijelentés, a lényeg aláhúzva */}
