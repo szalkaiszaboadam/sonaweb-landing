@@ -3,14 +3,11 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'motion/react'
+import { motion, AnimatePresence } from 'motion/react'
 import { useLenis } from 'lenis/react'
 import { ArrowUpRight } from 'lucide-react'
 
-// @/constants/layout.ts (vagy ahol a CONTAINER konstansod definiálva van)
 export const CONTAINER = "mx-auto w-full max-w-[1800px] px-6 sm:px-8 md:px-12 lg:px-20 xl:px-28 2xl:px-36"
-
-
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
@@ -18,11 +15,7 @@ export function Navbar() {
   const router = useRouter()
   const headerRef = useRef<any>(null)
   const lenis = useLenis()
-  // Megkülönbözteti a valódi (első) betöltést/reloadot a későbbi SPA-navigációtól.
-  // FONTOS: a `lenis` kezdetben null, és csak később áll elő — a useEffect emiatt
-  // kétszer fut le induláskor (egyszer lenis=null-lal, egyszer a kész példánnyal).
-  // A flag-et csak akkor "fogyasztjuk el", amikor a lenis már ténylegesen készen áll,
-  // különben pont az az egy futás csúszna át, ami a hibás scrollt okozta.
+
   const hasHandledInitialLoad = useRef(false)
 
   useEffect(() => {
@@ -62,18 +55,6 @@ export function Navbar() {
     }
   }, [pathname, lenis])
 
-  const [isHidden, setIsHidden] = useState(false)
-  const { scrollY } = useScroll()
-
-  useMotionValueEvent(scrollY, "change", (latest) => {
-    const previous = scrollY.getPrevious() ?? 0
-    if (latest > previous && latest > 150) {
-      setIsHidden(true)
-    } else {
-      setIsHidden(false)
-    }
-  })
-
   const toggleMenu = () => {
     if (!isOpen) {
       const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth
@@ -100,18 +81,16 @@ export function Navbar() {
     }
 
     if (typeof window !== 'undefined') {
-      ; (window as any).isNavbarTransitioning = true
+      ;(window as any).isNavbarTransitioning = true
     }
-
     closeMenu()
-
     setTimeout(() => {
       router.push(href)
     }, 300)
 
     setTimeout(() => {
       if (typeof window !== 'undefined') {
-        ; (window as any).isNavbarTransitioning = false
+        ;(window as any).isNavbarTransitioning = false
         window.dispatchEvent(new Event('navbarTransitionFinished'))
       }
     }, 1150)
@@ -119,13 +98,10 @@ export function Navbar() {
 
   const handleSectionLink = (e: React.MouseEvent, sectionId: string) => {
     e.preventDefault()
-
     if (typeof window !== 'undefined') {
-      ; (window as any).isNavbarTransitioning = true
+      ;(window as any).isNavbarTransitioning = true
     }
-
     closeMenu()
-
     setTimeout(() => {
       if (pathname === '/') {
         const target = document.getElementById(sectionId)
@@ -140,7 +116,7 @@ export function Navbar() {
 
     setTimeout(() => {
       if (typeof window !== 'undefined') {
-        ; (window as any).isNavbarTransitioning = false
+        ;(window as any).isNavbarTransitioning = false
         window.dispatchEvent(new Event('navbarTransitionFinished'))
       }
     }, 1150)
@@ -178,12 +154,11 @@ export function Navbar() {
       <motion.header
         ref={headerRef}
         initial={{ y: -40, opacity: 0 }}
-        animate={isHidden && !isOpen ? { y: '-100%', opacity: 0 } : { y: 0, opacity: 1 }}
+        animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         className="fixed inset-x-0 top-6 z-[70] w-full mix-blend-difference md:top-8"
       >
         <div className={`${CONTAINER} flex items-center justify-between`}>
-          
           <Link
             href="/"
             aria-label="SONAWEB home"
@@ -214,13 +189,12 @@ export function Navbar() {
                 onClick={(e) => link.sectionId ? handleSectionLink(e, link.sectionId) : handlePageLink(e, link.href)}
                 className="group flex items-center font-inter text-[14px] !font-semibold uppercase text-white"
               >
-                {/* Asztali linkek: padding és line-height fix az ékezeteknek, inset-0 pozicionálás */}
-                <span className="relative inline-flex overflow-hidden py-1.5 leading-normal">
-                  <span className="flex items-center gap-1.5 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
+                <span className="relative inline-flex overflow-hidden py-1">
+                  <span className="flex items-center gap-1.5 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
                     {link.title}
                     {link.hasArrow && <ArrowUpRight className="h-[1.2em] w-[1.2em]" strokeWidth={3} />}
                   </span>
-                  <span className="absolute inset-0 flex items-center gap-1.5 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                  <span className="absolute inset-0 flex items-center gap-1.5 translate-y-[150%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
                     {link.title}
                     {link.hasArrow && <ArrowUpRight className="h-[1.2em] w-[1.2em]" strokeWidth={3} />}
                   </span>
@@ -234,17 +208,15 @@ export function Navbar() {
             className="group md:hidden flex shrink-0 items-center font-inter text-[14px] !font-semibold uppercase text-white focus:outline-none"
             aria-label="Toggle menu"
           >
-            {/* Mobil Menü Gomb: Explicit BEZÁR / MENÜ szöveg és padding fix */}
-            <span className="relative inline-flex overflow-hidden py-1.5 leading-normal">
-              <span className="flex items-center transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
-                {isOpen ? 'BEZÁR' : 'MENÜ'}
+            <span className="relative inline-flex overflow-hidden py-1">
+              <span className="flex items-center transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
+                {isOpen ? 'BEZÁRÁS' : 'MENÜ'}
               </span>
-              <span className="absolute inset-0 flex items-center translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-                {isOpen ? 'BEZÁR' : 'MENÜ'}
+              <span className="absolute inset-0 flex items-center translate-y-[150%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                {isOpen ? 'BEZÁRÁS' : 'MENÜ'}
               </span>
             </span>
           </button>
-          
         </div>
       </motion.header>
 
@@ -266,13 +238,12 @@ export function Navbar() {
                       className="group flex w-full items-start py-2 text-left"
                       onClick={(e) => link.sectionId ? handleSectionLink(e, link.sectionId) : handlePageLink(e, link.href)}
                     >
-                      {/* Mobil linkek: leading-tight és py-2 az ékezetek védelmére, inset-0 pozíció */}
-                      <span className="relative inline-flex w-full overflow-hidden py-2 font-display text-[clamp(2rem,7vw,3.5rem)] font-extrabold uppercase leading-tight tracking-[-1.5px] text-white">
-                        <span className="flex items-center gap-3 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
+                      <span className="relative inline-flex w-full overflow-hidden py-2 font-display text-[clamp(2rem,7vw,3.5rem)] font-extrabold uppercase text-white">
+                        <span className="flex items-center gap-3 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
                           {link.title}
                           {link.hasArrow && <ArrowUpRight className="h-[0.9em] w-[0.9em] text-white" strokeWidth={3} />}
                         </span>
-                        <span className="absolute inset-0 flex items-center gap-3 translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                        <span className="absolute inset-0 flex items-center gap-3 translate-y-[150%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
                           {link.title}
                           {link.hasArrow && <ArrowUpRight className="h-[0.9em] w-[0.9em] text-white" strokeWidth={3} />}
                         </span>
