@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useRef } from 'react'
 import { motion, useScroll, useTransform } from 'motion/react'
+import { ShaderGradient } from '@/components/shader-gradient'
 
 export const CONTAINER = "mx-auto w-full max-w-[1800px] px-6 sm:px-8 md:px-12 lg:px-20 xl:px-28 2xl:px-36"
 
@@ -13,7 +14,7 @@ interface FooterProps {
 
 export function Footer({ variant = 'default', className = '' }: FooterProps) {
   const isMinimal = variant === 'minimal'
-  const baseClasses = className || 'relative w-full bg-[#D90429] overflow-hidden z-0'
+  const baseClasses = className || 'relative w-full bg-[#0A0A0A] overflow-hidden z-0'
   const footerRef = useRef<HTMLDivElement>(null)
   
   const { scrollYProgress } = useScroll({
@@ -21,26 +22,38 @@ export function Footer({ variant = 'default', className = '' }: FooterProps) {
     offset: ["start end", "end end"]
   })
   
-  const y = useTransform(scrollYProgress, [0, 1], ["-35%", "0%"])
+  // A szöveg a megszokott módon úszik fel
+  const textY = useTransform(scrollYProgress, [0, 1], ["-35%", "0%"])
+  
+  // A háttér "ellenáll" a görgetésnek, így teljesen fixnek érződik
+  const bgY = useTransform(scrollYProgress, [0, 1], ["-40%", "10%"])
 
   return (
     <footer ref={footerRef} className={baseClasses}>
+      {/* SHADER GRADIENS HÁTTÉR - FIX/PARALLAX HATÁSSAL */}
       <motion.div 
-        style={!isMinimal ? { y } : {}}
-        className={`w-full relative ${isMinimal ? 'py-4' : 'pt-4 pb-4 md:pt-5 md:pb-5'}`}
+        style={{ y: bgY }} 
+        className="absolute left-0 right-0 top-[-20%] h-[150%] z-0 pointer-events-none opacity-90"
+      >
+        <ShaderGradient className="absolute inset-0 h-full w-full" />
+      </motion.div>
+
+      <motion.div 
+        style={!isMinimal ? { y: textY } : {}}
+        className={`w-full relative z-10 ${isMinimal ? 'py-4' : 'pt-4 pb-4 md:pt-5 md:pb-5'}`}
       >
         <div className={`${CONTAINER} flex flex-col relative z-10`}>
           
           <div className={`relative z-20 w-full flex flex-col items-start gap-6 lg:flex-row lg:items-center lg:justify-between ${isMinimal ? 'mb-0' : 'mb-4 md:mb-5'}`}>
             
             <div className="flex shrink-0 items-center">
-              <span className="font-inter text-[13px] tracking-wide font-semibold uppercase text-[#0A0A0A]">
+              <span className="font-inter text-[13px] tracking-wide font-semibold uppercase text-white">
                   © {new Date().getFullYear()} SONAWEB KFT.
               </span>
             </div>
             
             <div className="grid w-full grid-cols-2 gap-x-6 gap-y-3 font-inter text-[13px] tracking-wide font-semibold uppercase lg:flex lg:w-auto lg:shrink-0 lg:items-center lg:justify-center lg:gap-8">
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="group text-[#0A0A0A]">
+              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="group text-white">
                 <span className="relative inline-block overflow-hidden py-1">
                   <span className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
                     Instagram
@@ -51,7 +64,7 @@ export function Footer({ variant = 'default', className = '' }: FooterProps) {
                 </span>
               </a>
               
-              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="group text-[#0A0A0A]">
+              <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="group text-white">
                 <span className="relative inline-block overflow-hidden py-1">
                   <span className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
                     Facebook
@@ -64,7 +77,7 @@ export function Footer({ variant = 'default', className = '' }: FooterProps) {
             </div>
 
             <div className="grid w-full grid-cols-2 gap-x-6 gap-y-3 font-inter text-[13px] tracking-wide font-semibold uppercase lg:flex lg:w-auto lg:shrink-0 lg:items-center lg:justify-end lg:gap-8">
-              <Link href="/legal/privacy-policy" className="group text-[#0A0A0A]">
+              <Link href="/legal/privacy-policy" className="group text-white">
                 <span className="relative inline-block overflow-hidden py-1">
                   <span className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
                     Adatkezelési tájékoztató
@@ -74,7 +87,7 @@ export function Footer({ variant = 'default', className = '' }: FooterProps) {
                   </span>
                 </span>
               </Link>
-              <Link href="/legal/cookie-policy" className="group text-[#0A0A0A]">
+              <Link href="/legal/cookie-policy" className="group text-white">
                 <span className="relative inline-block overflow-hidden py-1">
                   <span className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
                     Cookie tájékoztató
@@ -84,7 +97,7 @@ export function Footer({ variant = 'default', className = '' }: FooterProps) {
                   </span>
                 </span>
               </Link>
-              <Link href="/legal/imprint" className="group text-[#0A0A0A]">
+              <Link href="/legal/imprint" className="group text-white">
                 <span className="relative inline-block overflow-hidden py-1">
                   <span className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
                     Impresszum
@@ -113,7 +126,7 @@ export function Footer({ variant = 'default', className = '' }: FooterProps) {
                      y="150" 
                      textLength="1000" 
                      lengthAdjust="spacingAndGlyphs" 
-                     fill="#000000" 
+                     fill="#FFFFFF" 
                      fontSize="195" 
                      fontWeight="900" 
                      fontFamily="'Montserrat', sans-serif"
@@ -133,7 +146,7 @@ export function Footer({ variant = 'default', className = '' }: FooterProps) {
                      y="195" 
                      textLength="1000" 
                      lengthAdjust="spacingAndGlyphs" 
-                     fill="#000000" 
+                     fill="#FFFFFF" 
                      fontSize="260" 
                      fontWeight="900" 
                      fontFamily="'Montserrat', sans-serif"

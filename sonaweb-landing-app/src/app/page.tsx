@@ -238,7 +238,7 @@ export function AboutSection() {
             transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             className="mx-auto w-full max-w-6xl font-display text-[clamp(2.1rem,6vw,88px)] font-extrabold uppercase leading-[1.1] tracking-[-1.5px] text-white md:tracking-[-3px]"
           >
-            Soha nem csak egy weboldal. Az Ön márkája, a mi megszállottságunk – minden apró részletben ott a figyelmünk.
+            Sosem csak egy weboldal. A Te márkád a mi megszállottságunk – minden pixelben ott vagyunk.
           </motion.h2>
         </div>
       </div>
@@ -306,7 +306,7 @@ export function SelectedWork() {
           className="mb-14 flex justify-center md:mb-20 md:justify-start"
         >
           <span className="font-inter text-[13px] md:text-[14px] font-semibold uppercase tracking-wide text-white/40">
-            Kiemelt munkáink
+            Amikkel bizonyítottunk
           </span>
         </motion.div>
         <div className="grid grid-cols-1 gap-y-16 md:grid-cols-12 md:gap-x-6 lg:gap-x-10 lg:gap-y-24">
@@ -383,21 +383,21 @@ export default function HomePage() {
               variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } } }}
               className="max-w-[650px] font-inter text-[16px] md:text-[18px] font-semibold leading-relaxed tracking-[-0.2px] text-white mb-8 md:mb-12 text-center"
             >
-              Segítünk a márkáknak megérkezni a jelenbe. Figyelemfelkeltő megjelenés, ami konverziót hoz a digitális térben.
+              Nem csak jelen vagyunk – uraljuk a felületet. Olyan megjelenést építünk, ami nem hagy hidegen senkit, és tényleg hoz is valamit.
             </motion.p>
 
             <motion.div variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } } }} className="mb-12 md:mb-16">
 <Link
-  href="/start"
+  href="/contact"
   className="group flex w-full items-center justify-center rounded-full bg-white px-7 py-3.5 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#0A0A0A] overflow-hidden sm:w-auto"
 >
   <span className="relative inline-flex overflow-hidden my-[-2px] py-[2px]">
     <span className="inline-flex items-center gap-1.5 whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
-      Projekt indítása
+      Vágjunk bele
       <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
     </span>
     <span className="absolute left-0 inline-flex items-center gap-1.5 whitespace-nowrap translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-      Projekt indítása
+      Vágjunk bele
       <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
     </span>
   </span>
@@ -440,7 +440,7 @@ export default function HomePage() {
               }}
               className="text-left font-display text-[clamp(2.1rem,6vw,72px)] font-extrabold uppercase leading-[1.05] tracking-[-1px] text-white"
             >
-              Kezdjük el a <br /> közös munkát!
+              Vágjunk bele <br /> közösen!
             </motion.h2>
 
             <div className="flex max-w-[360px] flex-col items-start gap-6 md:items-end md:text-right">
@@ -451,7 +451,7 @@ export default function HomePage() {
                 }}
                 className="font-inter text-[14px] md:text-[15px] leading-[1.6] text-white/60"
               >
-                Kérjen azonnali, kötelezettségmentes árajánlatot két perces kérdőívünk segítségével.
+                Két perc, pár kattintás – és már úton is van az ingyenes, kötelezettség nélküli árajánlatod.
               </motion.p>
 
               <motion.div
@@ -461,16 +461,16 @@ export default function HomePage() {
                 }}
               >
 <Link
-  href="/start"
+  href="/contact"
   className="group flex w-full items-center justify-center rounded-full bg-white px-7 py-3.5 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#0A0A0A] overflow-hidden sm:w-auto"
 >
   <span className="relative inline-flex overflow-hidden my-[-2px] py-[2px]">
     <span className="inline-flex items-center gap-1.5 whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
-      Projekt indítása
+      Vágjunk bele
       <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
     </span>
     <span className="absolute left-0 inline-flex items-center gap-1.5 whitespace-nowrap translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-      Projekt indítása
+      Vágjunk bele
       <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
     </span>
   </span>

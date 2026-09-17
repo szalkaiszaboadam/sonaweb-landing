@@ -127,10 +127,9 @@ export function Navbar() {
 
   const navLinks = [
     { title: 'Munkáink', href: '/work' },
-    { title: 'Megoldások', href: '/services' },
+    { title: 'Szolgáltatások', href: '/#services', sectionId: 'services' },
     { title: 'Rólunk', href: '/#about', sectionId: 'about' },
-    { title: 'Blog', href: '/blog' },
-    { title: 'Bejelentkezés', href: '/client', hasArrow: true },
+    { title: 'Kapcsolat', href: '/contact', hasArrow: true },
   ]
 
   const drawerVariants = {

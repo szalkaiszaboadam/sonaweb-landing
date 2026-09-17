@@ -7,14 +7,14 @@ import { SmoothScroll } from '@/components/smooth-scroll'
 
 export const metadata: Metadata = {
   title: {
-    template: '%s - SONAWEB',
-    default: 'SONAWEB',
+    template: '%s - SONAWEB.',
+    default: 'SONAWEB.',
   },
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'SONAWEB',
+    title: 'SONAWEB.',
   }
 }
 
