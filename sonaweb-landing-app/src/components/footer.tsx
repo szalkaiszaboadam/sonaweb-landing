@@ -22,15 +22,11 @@ export function Footer({ variant = 'default', className = '' }: FooterProps) {
     offset: ["start end", "end end"]
   })
   
-  // A szöveg a megszokott módon úszik fel
   const textY = useTransform(scrollYProgress, [0, 1], ["-35%", "0%"])
-  
-  // A háttér "ellenáll" a görgetésnek, így teljesen fixnek érződik
   const bgY = useTransform(scrollYProgress, [0, 1], ["-40%", "10%"])
 
   return (
     <footer ref={footerRef} className={baseClasses}>
-      {/* SHADER GRADIENS HÁTTÉR - FIX/PARALLAX HATÁSSAL */}
       <motion.div 
         style={{ y: bgY }} 
         className="absolute left-0 right-0 top-[-20%] h-[150%] z-0 pointer-events-none opacity-90"
@@ -44,69 +40,73 @@ export function Footer({ variant = 'default', className = '' }: FooterProps) {
       >
         <div className={`${CONTAINER} flex flex-col relative z-10`}>
           
-          <div className={`relative z-20 w-full flex flex-col items-start gap-6 lg:flex-row lg:items-center lg:justify-between ${isMinimal ? 'mb-0' : 'mb-4 md:mb-5'}`}>
+          {/* Felső navigációs rész: Grid mobilon (auto méretezéssel), Flex asztalin */}
+          <div className={`relative z-20 w-full grid grid-cols-[auto_auto] justify-between gap-x-4 gap-y-12 lg:flex lg:flex-row lg:items-center lg:justify-between ${isMinimal ? 'mb-0' : 'mb-6 md:mb-5'}`}>
             
-            <div className="flex shrink-0 items-center">
-              <span className="font-inter text-[13px] tracking-wide font-semibold uppercase text-white">
-                  © {new Date().getFullYear()} SONAWEB KFT.
-              </span>
+            {/* 1. Jogi linkek (Mobil: Bal oszlop, Asztali: Jobb oldal) */}
+            <div className="col-start-1 row-start-1 flex flex-col items-start gap-y-3 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase lg:order-3 lg:flex-row lg:w-auto lg:shrink-0 lg:items-center lg:justify-end lg:gap-8">
+              <Link href="/legal/privacy-policy" className="group text-white">
+                <span className="relative inline-flex overflow-hidden py-1">
+                  <span className="inline-block whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[180%]">
+                    Adatkezelési tájékoztató
+                  </span>
+                  <span className="absolute inset-0 flex items-center whitespace-nowrap translate-y-[180%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                    Adatkezelési tájékoztató
+                  </span>
+                </span>
+              </Link>
+              <Link href="/legal/cookie-policy" className="group text-white">
+                <span className="relative inline-flex overflow-hidden py-1">
+                  <span className="inline-block whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[180%]">
+                    Cookie tájékoztató
+                  </span>
+                  <span className="absolute inset-0 flex items-center whitespace-nowrap translate-y-[180%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                    Cookie tájékoztató
+                  </span>
+                </span>
+              </Link>
+              <Link href="/legal/imprint" className="group text-white">
+                <span className="relative inline-flex overflow-hidden py-1">
+                  <span className="inline-block whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[180%]">
+                    Impresszum
+                  </span>
+                  <span className="absolute inset-0 flex items-center whitespace-nowrap translate-y-[180%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                    Impresszum
+                  </span>
+                </span>
+              </Link>
             </div>
             
-            <div className="grid w-full grid-cols-2 gap-x-6 gap-y-3 font-inter text-[13px] tracking-wide font-semibold uppercase lg:flex lg:w-auto lg:shrink-0 lg:items-center lg:justify-center lg:gap-8">
+            {/* 2. Közösségi linkek (Mobil: Jobb oszlop, teljesen jobbra tolva) */}
+            <div className="col-start-2 row-start-1 flex flex-col items-start justify-self-end gap-y-3 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase lg:justify-self-auto lg:order-2 lg:flex-row lg:w-auto lg:shrink-0 lg:items-center lg:justify-center lg:gap-8">
               <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="group text-white">
-                <span className="relative inline-block overflow-hidden py-1">
-                  <span className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
+                <span className="relative inline-flex overflow-hidden py-1">
+                  <span className="inline-block whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[180%]">
                     Instagram
                   </span>
-                  <span className="absolute left-0 top-0 block translate-y-[150%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                  <span className="absolute inset-0 flex items-center whitespace-nowrap translate-y-[180%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
                     Instagram
                   </span>
                 </span>
               </a>
               
               <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" className="group text-white">
-                <span className="relative inline-block overflow-hidden py-1">
-                  <span className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
+                <span className="relative inline-flex overflow-hidden py-1">
+                  <span className="inline-block whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[180%]">
                     Facebook
                   </span>
-                  <span className="absolute left-0 top-0 block translate-y-[150%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                  <span className="absolute inset-0 flex items-center whitespace-nowrap translate-y-[180%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
                     Facebook
                   </span>
                 </span>
               </a>
             </div>
 
-            <div className="grid w-full grid-cols-2 gap-x-6 gap-y-3 font-inter text-[13px] tracking-wide font-semibold uppercase lg:flex lg:w-auto lg:shrink-0 lg:items-center lg:justify-end lg:gap-8">
-              <Link href="/legal/privacy-policy" className="group text-white">
-                <span className="relative inline-block overflow-hidden py-1">
-                  <span className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
-                    Adatkezelési tájékoztató
-                  </span>
-                  <span className="absolute left-0 top-0 block translate-y-[150%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-                    Adatkezelési tájékoztató
-                  </span>
-                </span>
-              </Link>
-              <Link href="/legal/cookie-policy" className="group text-white">
-                <span className="relative inline-block overflow-hidden py-1">
-                  <span className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
-                    Cookie tájékoztató
-                  </span>
-                  <span className="absolute left-0 top-0 block translate-y-[150%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-                    Cookie tájékoztató
-                  </span>
-                </span>
-              </Link>
-              <Link href="/legal/imprint" className="group text-white">
-                <span className="relative inline-block overflow-hidden py-1">
-                  <span className="block transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
-                    Impresszum
-                  </span>
-                  <span className="absolute left-0 top-0 block translate-y-[150%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-                    Impresszum
-                  </span>
-                </span>
-              </Link>
+            {/* 3. Copyright (Mobil: Alsó sor, Asztali: Bal oldal) */}
+            <div className="col-span-2 col-start-1 row-start-2 flex items-start lg:col-span-1 lg:order-1 lg:items-center lg:shrink-0 lg:row-start-auto">
+              <span className="font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase whitespace-nowrap text-white">
+                  © {new Date().getFullYear()} SONAWEB KFT.
+              </span>
             </div>
             
           </div>
@@ -130,7 +130,7 @@ export function Footer({ variant = 'default', className = '' }: FooterProps) {
                      fontSize="195" 
                      fontWeight="900" 
                      fontFamily="'Montserrat', sans-serif"
-                    style={{ letterSpacing: '-0.03em', wordSpacing: '-0.06em' }}
+                     style={{ letterSpacing: '-0.03em', wordSpacing: '-0.06em' }}
                   >
                     MADE BY
                   </text>
@@ -150,7 +150,7 @@ export function Footer({ variant = 'default', className = '' }: FooterProps) {
                      fontSize="260" 
                      fontWeight="900" 
                      fontFamily="'Montserrat', sans-serif"
-                    style={{ letterSpacing: '-0.03em', wordSpacing: '-0.06em' }}
+                     style={{ letterSpacing: '-0.03em', wordSpacing: '-0.06em' }}
                   >
                     GEN Z
                   </text>

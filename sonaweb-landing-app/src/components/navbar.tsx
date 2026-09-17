@@ -127,7 +127,6 @@ export function Navbar() {
 
   const navLinks = [
     { title: 'Munkáink', href: '/work' },
-    //{ title: 'Szolgáltatások', href: '/services', sectionId: 'services' },
     { title: 'Kapcsolat', href: '/contact' },
     { title: 'Bejelentkezés', href: '#', hasArrow: true },
   ]
@@ -186,16 +185,16 @@ export function Navbar() {
                 key={link.title}
                 href={link.href}
                 onClick={(e) => handlePageLink(e, link.href)}
-                className="group flex items-center font-inter text-[14px] !font-semibold uppercase text-white"
+                className="group flex items-center font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-white"
               >
                 <span className="relative inline-flex overflow-hidden py-1">
                   <span className="flex items-center gap-1.5 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
                     {link.title}
-                    {link.hasArrow && <ArrowUpRight className="h-[1.2em] w-[1.2em]" strokeWidth={3} />}
+                    {link.hasArrow && <ArrowUpRight className="h-[18px] w-[18px] -mr-0.5" strokeWidth={2.5} />}
                   </span>
                   <span className="absolute inset-0 flex items-center gap-1.5 translate-y-[150%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
                     {link.title}
-                    {link.hasArrow && <ArrowUpRight className="h-[1.2em] w-[1.2em]" strokeWidth={3} />}
+                    {link.hasArrow && <ArrowUpRight className="h-[18px] w-[18px] -mr-0.5" strokeWidth={2.5} />}
                   </span>
                 </span>
               </Link>
@@ -204,7 +203,7 @@ export function Navbar() {
 
           <button
             onClick={toggleMenu}
-            className="group md:hidden flex shrink-0 items-center font-inter text-[14px] !font-semibold uppercase text-white focus:outline-none"
+            className="group md:hidden flex shrink-0 items-center font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-white focus:outline-none"
             aria-label="Toggle menu"
           >
             <span className="relative inline-flex overflow-hidden py-1">

@@ -27,10 +27,12 @@ const clashDisplay = Montserrat({
 
 const inter = Inter({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+  weight: ['400', '500', '600', '700', '800', '900'],
   variable: '--font-inter',
   display: 'swap',
 })
+
+
 
 export default function RootLayout({
   children,
@@ -39,6 +41,12 @@ export default function RootLayout({
 }) {
   return (
     <html lang="hu" className={`${clashDisplay.variable} ${inter.variable}`}>
+      <head>
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_outward"
+        />
+      </head>
       <body className="font-inter antialiased">
         <CustomCursorProvider>
           <SmoothScroll>

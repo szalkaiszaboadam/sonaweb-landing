@@ -23,6 +23,8 @@ import {
 import { ArrowUpRight, Plus } from 'lucide-react'
 import { Footer } from '@/components/footer'
 import { ShaderGradient } from '@/components/shader-gradient'
+import { useCustomCursor } from '@/components/custom-cursor' 
+
 
 
 type ScrollContextValue = {
@@ -38,11 +40,11 @@ export function useSmoothScroll() {
 export const CONTAINER = "mx-auto w-full max-w-[1800px] px-6 sm:px-8 md:px-12 lg:px-20 xl:px-28 2xl:px-36"
 
 const PROJECTS = [
-  { name: 'TechFlow / B2B SaaS', src: '/placeholder.svg', h: 'h-[280px] md:h-[360px]', href: '/work/projekt-1' },
-  { name: 'DataSync / Enterprise', src: '/placeholder.svg', h: 'h-[340px] md:h-[480px]', href: '/work/projekt-1' },
-  { name: 'OmniPay / FinTech', src: '/placeholder.svg', h: 'h-[240px] md:h-[320px]', href: '/work/projekt-1' },
-  { name: 'CloudScale / AI Platform', src: '/placeholder.svg', h: 'h-[300px] md:h-[400px]', href: '/work/projekt-1' },
-  { name: '<TestimonialsSection />', src: '/placeholder.svg', h: 'h-[280px] md:h-[380px]', href: '/work/projekt-1' },
+  { name: 'CARL COZMO',  src: '/carl-cozmo-2.webp', h: 'h-[280px] md:h-[360px]'},
+  { name: 'placeholder',  src: '/', h: 'h-[340px] md:h-[480px]'},
+  { name: 'Aeroprodukt Zrt.',  src: '/aeroprodukt-2.mp4', h: 'h-[240px] md:h-[320px]'},
+  { name: 'DUKAY WINERY',  src: '/dukay-winery-2.webp', h: 'h-[300px] md:h-[400px]'},
+  { name: 'GázGépKer', src: '/gazgepker-1.webp', h: 'h-[280px] md:h-[380px]'},
 ]
 
 export function WorksCarousel() {
@@ -74,15 +76,28 @@ export function WorksCarousel() {
       >
         {[...PROJECTS, ...PROJECTS, ...PROJECTS, ...PROJECTS].map((project, i) => {
           const dim = CAROUSEL_DIMS[i % CAROUSEL_DIMS.length]
+          const isVideo = project.src.match(/\.(mp4|webm|ogg)$/i) // Megvizsgáljuk a kiterjesztést
+
           return (
             <div key={i} className="flex shrink-0 flex-col">
               <div className={`relative ${dim.width} ${dim.height} overflow-hidden rounded-2xl bg-white/5`}>
-                <Image
-                  src={project.src}
-                  alt={project.name || 'Project Image'}
-                  fill
-                  className="object-cover"
-                />
+                {isVideo ? (
+                  <video
+                    src={project.src}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <Image
+                    src={project.src}
+                    alt={project.name || 'Project'}
+                    fill
+                    className="object-cover"
+                  />
+                )}
               </div>
             </div>
           )
@@ -191,7 +206,7 @@ export function Services() {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="mb-14 flex justify-center md:mb-20 md:justify-start"
         >
-          <span className="font-inter text-[13px] md:text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-white/60">
+          <span className="font-inter text-[14px] md:text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#606060]">
             Miben segítünk?
           </span>
         </motion.div>
@@ -242,7 +257,7 @@ export function Services() {
                     <span
                       style={{ fontSize }}
                       className={`${SERVICES_TITLE_CLASS} block whitespace-nowrap transition-colors duration-300 ease-out ${
-                        isActive ? 'text-white' : 'text-white/30'
+                        isActive ? 'text-white' : 'text-[#5E5E5E]'
                       }`}
                     >
                       {service.title}
@@ -296,6 +311,7 @@ export function Services() {
 }
 
 
+
 export function AboutSection() {
   return (
     <section id="about" className="relative z-10 w-full bg-[#0A0A0A] py-20 md:py-28 lg:py-36 overflow-hidden" data-theme="dark">
@@ -306,7 +322,7 @@ export function AboutSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.5 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-6 block font-inter text-[13px] md:text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-white/40 md:mb-8 md:text-[13px]"
+            className="mb-6 block font-inter text-[13px] md:text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#606060] md:mb-8 md:text-[13px]"
           >
             Rólunk
           </motion.span>
@@ -315,9 +331,10 @@ export function AboutSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="mx-auto w-full max-w-6xl font-display text-[clamp(2.1rem,6vw,88px)] font-extrabold uppercase leading-[1.1] tracking-[-1.5px] text-white md:tracking-[-3px]"
+            // 1. break-words hozzáadva, clamp minimum levéve 1.75rem-re
+            className="mx-auto w-full max-w-6xl font-display text-[clamp(1.75rem,8vw,88px)] font-extrabold uppercase leading-[1.1] tracking-[-1px] text-white md:tracking-[-3px] break-words"
           >
-            Sosem csak egy weboldal. A Te márkád a mi megszállottságunk – minden pixelben ott vagyunk.
+            Sosem csak egy weboldal. A Te márkád a mi meg&shy;szállott&shy;ságunk – minden pixelben ott vagyunk.
           </motion.h2>
         </div>
       </div>
@@ -326,12 +343,12 @@ export function AboutSection() {
 }
 
 const PROJECTS2 = [
-  { title: 'TÜRKIZ Restaurant', image: '/dukay-winnery-1.webp', link: '/work/turkiz' },
-  { title: 'Rose Budapest', image: '/solcar-1.webp', link: '/work/rose' },
-  { title: 'SZVG Tools', image: '/gazgepker-2.webp', link: '/work/szvg' },
-  { title: 'Struktur Marketing', image: '/placeholder.svg', link: '/work/struktur' },
-  { title: 'Aura Studio', image: '/placeholder.svg', link: '/work/aura' },
-  { title: 'Kavics Atelier', image: '/placeholder.svg', link: '/work/kavics' },
+  { title: 'DUKAY WINERY', image: '/dukay-winery-1.webp', link: '/work/#' },
+  { title: 'Sol Car', image: '/solcar-1.webp', link: '/work/#' },
+  { title: 'GázGépKer', image: '/gazgepker-2.webp', link: '/work/#' },
+  { title: 'CARL COZMO', image: '/carl-cozmo-3.webp', link: '/work/#' },
+  { title: 'placeholder2', image: '/', link: '/work/#' },
+  { title: 'placeholder3', image: '/', link: '/work/#' },
 ]
 
 const EDITORIAL_CONFIGS = [
@@ -343,10 +360,13 @@ const EDITORIAL_CONFIGS = [
   { gridClass: 'md:col-span-5 md:col-start-8 md:mt-20 lg:mt-28', aspect: 'aspect-square' },
 ]
 
+
 function ProjectItem({ project, config }: { project: (typeof PROJECTS2)[0], config: (typeof EDITORIAL_CONFIGS)[0] }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ['start end', 'end start'] })
   const y = useTransform(scrollYProgress, [0, 1], ['-18%', '18%'])
+
+  const { setCursor, clearCursor } = useCustomCursor()
 
   return (
     <motion.div
@@ -357,14 +377,24 @@ function ProjectItem({ project, config }: { project: (typeof PROJECTS2)[0], conf
       transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
       className={`group flex flex-col ${config.gridClass}`}
     >
-      <Link href={project.link} className="flex w-full flex-col">
-        <div className={`relative mb-4 w-full overflow-hidden rounded-2xl bg-white/[0.02] ${config.aspect}`}>
+      <Link 
+        href={project.link} 
+        className="flex w-full flex-col"
+        onClick={clearCursor}
+      >
+        <div 
+  onMouseEnter={() => setCursor({ active: true, label: 'Megnézem' })}
+  onMouseLeave={clearCursor}
+  className={`relative mb-4 w-full overflow-hidden rounded-2xl bg-white/[0.02] ${config.aspect}`}
+>
+
           <motion.div style={{ y }} className="relative -top-[20%] h-[140%] w-full will-change-transform">
             <Image src={project.image} alt={project.title} fill className="object-cover" />
           </motion.div>
         </div>
+
         <div className="w-full px-1">
-          <h3 className="font-inter text-[14px] font-semibold uppercase tracking-wide text-white">
+          <h3 className="font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-white">
             {project.title}
           </h3>
         </div>
@@ -372,6 +402,8 @@ function ProjectItem({ project, config }: { project: (typeof PROJECTS2)[0], conf
     </motion.div>
   )
 }
+
+
 
 export function SelectedWork() {
   return (
@@ -384,10 +416,11 @@ export function SelectedWork() {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="mb-14 flex justify-center md:mb-20 md:justify-start"
         >
-          <span className="font-inter text-[13px] md:text-[14px] font-semibold uppercase tracking-wide text-white/40">
+          <span className="font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#606060]">
             Amikkel bizonyítottunk
           </span>
         </motion.div>
+
         <div className="grid grid-cols-1 gap-y-16 md:grid-cols-12 md:gap-x-6 lg:gap-x-10 lg:gap-y-24">
           {PROJECTS2.map((project, i) => (
             <ProjectItem key={project.title} project={project} config={EDITORIAL_CONFIGS[i]} />
@@ -398,11 +431,17 @@ export function SelectedWork() {
   )
 }
 
+
 const CLIENTS = [
-  { name: 'Türkiz', logo: '/placeholder-logo.svg' },
-  { name: 'Rose Budapest', logo: '/placeholder-logo.svg' },
-  { name: 'SZVG Tools', logo: '/placeholder-logo.svg' },
-  { name: 'Struktur', logo: '/placeholder-logo.svg' },
+  { name: 'Fröccsterasz', logo: '/clients/froccsterasz-logo.png' },
+  { name: 'TÜRKIZ Budapest', logo: '/clients/turkiz-budapest-logo.png' },
+  { name: 'Sol Car', logo: '/clients/solcar-logo.png' },
+  { name: 'Bori Tanya Csongrád', logo: '/clients/bori-tanya-csongrad-logo.png' },
+  { name: 'TTMBio', logo: '/clients/ttmbio-logo.png' },
+  { name: 'DUKAY WINERY', logo: '/clients/dukay-winery-logo.png' },
+  { name: 'Juhos Gépbér Kft.', logo: '/clients/juhos-gepber-kft-logo.png' },
+  { name: 'CARL COZMO', logo: '/clients/carl-cozmo-logo.png' },
+  { name: 'GázGépKer', logo: '/clients/gazgepker-logo.png' },
 ]
 
 export function ClientsMarquee() {
@@ -417,13 +456,15 @@ export function ClientsMarquee() {
           className="flex shrink-0 items-center gap-16 pr-16 md:gap-24 md:pr-24"
         >
           {[...CLIENTS, ...CLIENTS, ...CLIENTS].map((client, i) => (
-            <div key={i} className="group shrink-0">
-              <div className="relative h-8 w-28 opacity-30 grayscale transition-all duration-300 group-hover:opacity-100 group-hover:grayscale-0 md:h-10 md:w-36">
+            <div key={i} className="flex shrink-0 items-center justify-center">
+              {/* Itt a varázslat: a doboz most sokkal magasabb, így a négyzetes logók megnőhetnek, 
+                  de a széles logókat a w-44 továbbra is kordában tartja */}
+              <div className="relative h-20 w-32 md:h-24 md:w-44">
                 <Image
                   src={client.logo}
                   alt={client.name}
                   fill
-                  className="object-contain"
+                  className="object-contain brightness-0 invert"
                 />
               </div>
             </div>
@@ -433,6 +474,8 @@ export function ClientsMarquee() {
     </div>
   )
 }
+
+
 
 export default function HomePage() {
   return (
@@ -456,21 +499,22 @@ export default function HomePage() {
       </motion.p>
 
       <motion.div variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } } }} className="mb-12 md:mb-16">
-        <Link
-          href="/start"
-          className="group flex w-full items-center justify-center rounded-full bg-white px-7 py-3.5 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#0A0A0A] overflow-hidden sm:w-auto"
-        >
-          <span className="relative inline-flex overflow-hidden my-[-2px] py-[2px]">
-            <span className="inline-flex items-center gap-1.5 whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
-              Projekt indítása
-              <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
-            </span>
-            <span className="absolute left-0 inline-flex items-center gap-1.5 whitespace-nowrap translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-              Projekt indítása
-              <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
-            </span>
-          </span>
-        </Link>
+<Link
+  href="/contact"
+  className="group flex w-full items-center justify-center rounded-full bg-white px-5 py-3.5 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#0A0A0A] overflow-hidden sm:w-auto"
+>
+  <span className="relative inline-flex overflow-hidden my-[-2px] py-[2px]">
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
+      Vágjunk bele
+    </span>
+    <span className="absolute left-0 inline-flex items-center gap-1.5 whitespace-nowrap translate-y-[150%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+      Vágjunk bele
+    </span>
+  </span>
+</Link>
+
+
+
       </motion.div>
 
     </motion.div>
@@ -481,9 +525,10 @@ export default function HomePage() {
 
 
       <AboutSection />
+      <ClientsMarquee />
       <SelectedWork />
       <Services />
-      <ClientsMarquee />
+      
 
       {/* CTA SECTION */}
 <section className="relative z-10 w-full bg-[#0A0A0A] py-20 md:py-28 lg:py-36 overflow-hidden" data-theme="dark">
@@ -527,21 +572,22 @@ export default function HomePage() {
           }}
         >
           
-          <Link
-            href="/start"
-            className="group flex w-full items-center justify-center rounded-full bg-white px-7 py-3.5 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#0A0A0A] overflow-hidden sm:w-auto"
-          >
-            <span className="relative inline-flex overflow-hidden my-[-2px] py-[2px]">
-              <span className="inline-flex items-center gap-1.5 whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
-                Projekt indítása
-                <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
-              </span>
-              <span className="absolute left-0 inline-flex items-center gap-1.5 whitespace-nowrap translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-                Projekt indítása
-                <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
-              </span>
-            </span>
-          </Link>
+<Link
+  href="/contact"
+  className="group flex w-full items-center justify-center rounded-full bg-white px-5 py-3.5 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#0A0A0A] overflow-hidden sm:w-auto"
+>
+  <span className="relative inline-flex overflow-hidden my-[-2px] py-[2px]">
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
+      Vágjunk bele
+      <ArrowUpRight className="h-[18px] w-[18px] -mr-0.5" strokeWidth={2.5} />
+    </span>
+    <span className="absolute left-0 inline-flex items-center gap-1.5 whitespace-nowrap translate-y-[150%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+      Vágjunk bele
+      <ArrowUpRight className="h-[18px] w-[18px] -mr-0.5" strokeWidth={2.5} />
+    </span>
+  </span>
+</Link>
+
 
         </motion.div>
       </div>

@@ -48,7 +48,9 @@ export function CustomCursorProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
+    // Ha érintőképernyős eszköz, megáll a futás (így a visible sosem lesz true)
     if (window.matchMedia('(pointer: coarse)').matches) return
+    
     const move = (e: globalThis.MouseEvent) => {
       mouseX.set(e.clientX)
       mouseY.set(e.clientY)
@@ -68,7 +70,8 @@ export function CustomCursorProvider({ children }: { children: ReactNode }) {
       {children}
       <motion.div
         aria-hidden
-        className="pointer-events-none fixed left-0 top-0 z-[99999] hidden md:block mix-blend-difference"
+        // KIVÉVE: hidden md:block
+        className="pointer-events-none fixed left-0 top-0 z-[99999] mix-blend-difference"
         style={{
           x: smoothX,
           y: smoothY,
@@ -79,7 +82,6 @@ export function CustomCursorProvider({ children }: { children: ReactNode }) {
         transition={{ opacity: { duration: 0.2 } }}
       >
         <motion.div
-          /* text-[#0A0A0A] fixen itt van, nincs animációs ütközés */
           className="flex items-center justify-center overflow-hidden rounded-full text-center font-inter text-[14px] font-semibold uppercase leading-[14px] tracking-[-0.4px] text-[#0A0A0A]"
           animate={{
             width: active ? 112 : 12,
@@ -108,7 +110,7 @@ export function CustomCursorProvider({ children }: { children: ReactNode }) {
                   stiffness: 400,
                   damping: 30,
                 }}
-                className="px-2 whitespace-nowrap"
+                className="px-2 whitespace-nowrap font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#0A0A0A]"
               >
                 {label}
               </motion.span>
