@@ -20,8 +20,10 @@ import {
   wrap,
   type MotionValue,
 } from 'motion/react'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowUpRight, Plus } from 'lucide-react'
 import { Footer } from '@/components/footer'
+import { ShaderGradient } from '@/components/shader-gradient'
+
 
 type ScrollContextValue = {
   smoothY: MotionValue<number>
@@ -91,20 +93,61 @@ export function WorksCarousel() {
 }
 
 const SERVICES = [
-  { title: 'Webfejlesztés', desc: 'Személyre szabott, gyors és reszponzív weboldalak, webshopok és komplex portálok fejlesztése, amelyek valós üzleti értéket és konverziót hoznak.' },
-  { title: 'Tartalomgyártás', desc: 'Kreatív és vizuálisan lenyűgöző anyagok készítése (fotó, videó, szövegírás), melyek megragadják és hosszú távon is fenntartják a célközönség figyelmét.' },
-  { title: 'Hirdetéskezelés', desc: 'Adatalapú, hajszálpontosan célzott kampányok a Google és Meta platformjain, amelyek azonnali, mérhető növekedést garantálnak.' },
-  { title: 'Márkastratégia', desc: 'Hosszú távú digitális iránytű, amellyel cége kitűnik a zajból, megerősíti brandjét és bebetonozza piacvezető pozícióját.' },
+  { 
+    title: 'Webfejlesztés', 
+    subServices: [
+      'UX / UI Design',
+      'Vállalati Weboldal',
+      'Landing Page',
+      'Webshop & E-kereskedelem',
+      'Egyedi Webes Platformok',
+      'Hosting & Karbantartás'
+    ]
+  },
+  { 
+    title: 'Tartalomgyártás', 
+    subServices: [
+      'Kreatív Koncepció',
+      'Precíziós Szövegírás',
+      'Reklámfilm & Fotózás',
+      'Rövid Videók (TikTok, Reels)',
+      'Grafikai Tervezés',
+      'Animáció'
+    ]
+  },
+  { 
+    title: 'Hirdetéskezelés', 
+    subServices: [
+      'Meta Kampányok',
+      'Google Ads',
+      'TikTok Ads',
+      'Retargeting Stratégia',
+      'Konverzió Optimalizálás',
+      'Analitika & Riportálás'
+    ]
+  },
+  { 
+    title: 'Márkastratégia', 
+    subServices: [
+      'Márka Architektúra',
+      'Pozicionálás',
+      'Brand Identity',
+      'Kommunikációs Stratégia',
+      'Naming',
+      'Piackutatás'
+    ]
+  },
 ]
 
 const LONGEST_TITLE = SERVICES.reduce((a, b) => (b.title.length > a.title.length ? b : a)).title
 const SERVICES_TITLE_CLASS = 'font-display font-extrabold uppercase leading-[0.95] tracking-[-1px] md:leading-[0.9] md:tracking-[-3px]'
-const MEASURE_BASE_PX = 300
 
-function useFitFontSize(text: string, className: string) {
+const MEASURE_BASE_PX = 120 
+
+function useFitFontSize(text: string, className: string, minPx = 20, maxPx = 90) {
   const containerRef = useRef<HTMLDivElement>(null)
   const measureRef = useRef<HTMLSpanElement>(null)
-  const [fontSize, setFontSize] = useState(90)
+  const [fontSize, setFontSize] = useState(60)
 
   useEffect(() => {
     const recalc = () => {
@@ -115,7 +158,7 @@ function useFitFontSize(text: string, className: string) {
       const measuredWidth = measure.offsetWidth
       if (!containerWidth || !measuredWidth) return
       const next = (containerWidth / measuredWidth) * MEASURE_BASE_PX
-      setFontSize(Math.min(Math.max(next, 26), 180))
+      setFontSize(Math.min(Math.max(next, minPx), maxPx))
     }
 
     recalc()
@@ -124,14 +167,19 @@ function useFitFontSize(text: string, className: string) {
       document.fonts.ready.then(recalc).catch(() => { })
     }
     return () => window.removeEventListener('resize', recalc)
-  }, [text, className])
+  }, [text, className, minPx, maxPx])
 
   return { containerRef, measureRef, fontSize }
 }
 
 export function Services() {
-  const [activeIdx, setActiveIdx] = useState<number | null>(null)
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null)
+  const [expandedIdx, setExpandedIdx] = useState<number>(0)
   const { containerRef, measureRef, fontSize } = useFitFontSize(LONGEST_TITLE, SERVICES_TITLE_CLASS)
+
+  const handleToggle = (i: number) => {
+    setExpandedIdx(i)
+  }
 
   return (
     <section id="services" className="relative z-10 w-full bg-[#0A0A0A] py-20 md:py-28 lg:py-36 overflow-hidden" data-theme="dark">
@@ -143,11 +191,10 @@ export function Services() {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           className="mb-14 flex justify-center md:mb-20 md:justify-start"
         >
-          <span className="font-inter text-[13px] md:text-[14px] font-semibold uppercase tracking-wide text-white/40">
+          <span className="font-inter text-[13px] md:text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-white/60">
             Miben segítünk?
           </span>
         </motion.div>
-
 
         <motion.div
           ref={containerRef}
@@ -157,7 +204,6 @@ export function Services() {
           variants={{ hidden: {}, show: { transition: { staggerChildren: 0.08 } } }}
           className="relative flex w-full flex-col items-center"
         >
-          {/* Lenyomat a betűméret kiszámításához */}
           <span
             ref={measureRef}
             aria-hidden="true"
@@ -168,47 +214,79 @@ export function Services() {
           </span>
 
           {SERVICES.map((service, i) => {
-            const isActive = activeIdx === i
-            const isDimmed = activeIdx !== null && !isActive
+            const isHovered = hoveredIdx === i
+            const isExpanded = expandedIdx === i
+            const isActive = isExpanded || isHovered
 
             return (
-              <motion.button
+              <motion.div
                 key={service.title}
-                type="button"
                 variants={{
                   hidden: { opacity: 0, y: 24 },
                   show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } }
                 }}
-                onMouseEnter={() => setActiveIdx(i)}
-                onMouseLeave={() => setActiveIdx(null)}
-                onFocus={() => setActiveIdx(i)}
-                onBlur={() => setActiveIdx(null)}
-                className="group flex w-full max-w-full flex-col items-center justify-center py-3 focus:outline-none md:py-5"
+                className="flex w-full flex-col items-center"
               >
-                <span
-                  style={{ fontSize }}
-                  className={`${SERVICES_TITLE_CLASS} block whitespace-nowrap transition-colors duration-300 ease-out ${isDimmed ? 'text-white/20' : 'text-white'
-                    }`}
+                <button
+                  type="button"
+                  onClick={() => handleToggle(i)}
+                  onMouseEnter={() => setHoveredIdx(i)}
+                  onMouseLeave={() => setHoveredIdx(null)}
+                  onFocus={() => setHoveredIdx(i)}
+                  onBlur={() => setHoveredIdx(null)}
+                  className={`group flex w-full max-w-full items-center justify-center py-2 focus:outline-none md:py-4 ${
+                    isExpanded ? 'cursor-default' : 'cursor-pointer'
+                  }`}
                 >
-                  {service.title}
-                </span>
+                  <span className="relative inline-flex items-center justify-center">
+                    <span
+                      style={{ fontSize }}
+                      className={`${SERVICES_TITLE_CLASS} block whitespace-nowrap transition-colors duration-300 ease-out ${
+                        isActive ? 'text-white' : 'text-white/30'
+                      }`}
+                    >
+                      {service.title}
+                    </span>
+
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{
+                        opacity: isHovered && !isExpanded ? 1 : 0,
+                        scale: isHovered && !isExpanded ? 1 : 0.8,
+                      }}
+                      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                      className="absolute left-full ml-3 top-1/2 -translate-y-1/2 text-white transition-colors md:ml-5"
+                    >
+                      <Plus style={{ width: fontSize * 0.35, height: fontSize * 0.35 }} strokeWidth={3} />
+                    </motion.div>
+                  </span>
+                </button>
 
                 <AnimatePresence>
-                  {isActive && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0, marginTop: 0 }}
-                      animate={{ height: 'auto', opacity: 1, marginTop: 16 }}
-                      exit={{ height: 0, opacity: 0, marginTop: 0 }}
-                      transition={{ duration: 0.3, ease: 'easeOut' }}
-                      className="overflow-hidden"
-                    >
-                      <p className="max-w-2xl px-4 text-center font-inter text-[15px] leading-relaxed text-white/70 md:text-[17px]">
-                        {service.desc}
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.button>
+  {isExpanded && (
+    <motion.div
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: 'auto', opacity: 1 }}
+      exit={{ height: 0, opacity: 0 }}
+      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+      className="overflow-hidden w-full"
+    >
+      <div className="flex flex-col items-center justify-center gap-1.5 pb-8 pt-2 md:pb-12 md:pt-4">
+        {service.subServices.map((sub, idx) => (
+          <span
+            key={idx}
+            // 15px-es méret, tiszta fehér szín, hover effektek nélkül
+            className="font-inter text-[15px] leading-[15px] tracking-[-0.4px] font-semibold uppercase text-white"
+          >
+            {sub}
+          </span>
+        ))}
+      </div>
+    </motion.div>
+  )}
+</AnimatePresence>
+
+              </motion.div>
             )
           })}
         </motion.div>
@@ -216,6 +294,7 @@ export function Services() {
     </section>
   )
 }
+
 
 export function AboutSection() {
   return (
@@ -359,61 +438,47 @@ export default function HomePage() {
   return (
     <main className="bg-[#0A0A0A] font-inter text-white selection:bg-[#BF2234] selection:text-white">
       {/* Hero */}
-      <section data-theme="dark" className="relative flex min-h-[100svh] w-full flex-col items-center justify-between overflow-hidden bg-[#0A0A0A] pt-[15vh] md:pt-[20vh]">
-        <motion.div className={`${CONTAINER} relative z-30 flex flex-1 flex-col items-center justify-center text-center -mt-12 md:-mt-20`}>
-          <motion.div initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } } }} className="flex w-full flex-col items-center">
+<section data-theme="dark" className="relative flex min-h-[100svh] w-full flex-col items-center justify-between overflow-hidden bg-[#0A0A0A] pt-[15vh] md:pt-[20vh]">
+  <motion.div className={`${CONTAINER} relative z-30 flex flex-1 flex-col items-center justify-center text-center -mt-12 md:-mt-20`}>
+    <motion.div initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } } }} className="flex w-full flex-col items-center">
 
-            <motion.div variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] } } }} className="w-full mb-8 md:mb-10 flex justify-center">
-              <div className="relative w-full h-[28vw] md:h-[18vw] overflow-hidden bg-[#0A0A0A]" style={{ WebkitMask: 'url(/sonaweb-logo-white.png) center/contain no-repeat', mask: 'url(/sonaweb-logo-white.png) center/contain no-repeat', transform: 'translateZ(0)', filter: 'drop-shadow(0 0 45px rgba(191,34,52,0.55)) drop-shadow(0 0 90px rgba(191,34,52,0.35))' }}>
-                <motion.div
-                  animate={{
-                    backgroundPosition: ['0% 0%', '100% 100%', '0% 100%', '100% 0%', '0% 0%'],
-                  }}
-                  transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
-                  className="absolute left-1/2 top-1/2 h-[300%] w-[300%] -translate-x-1/2 -translate-y-1/2 opacity-90"
-                  style={{
-                    background: 'radial-gradient(circle at 50% 50%, #ff1a1a 0%, #d90429 20%, #740013 45%, #0A0A0A 75%)',
-                    backgroundSize: '150% 150%',
-                  }}
-                />
-              </div>
-            </motion.div>
+      <motion.div variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] } } }} className="w-full mb-8 md:mb-10 flex justify-center">
+        <div className="relative w-full h-[28vw] md:h-[18vw] overflow-hidden bg-[#0A0A0A]" style={{ WebkitMask: 'url(/sonaweb-logo-white.png) center/contain no-repeat', mask: 'url(/sonaweb-logo-white.png) center/contain no-repeat', transform: 'translateZ(0)', filter: 'drop-shadow(0 0 45px rgba(191,34,52,0.55)) drop-shadow(0 0 90px rgba(191,34,52,0.35))' }}>
+          <ShaderGradient className="absolute inset-0 h-full w-full" />
+        </div>
+      </motion.div>
 
-            <motion.p
-              variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } } }}
-              className="max-w-[650px] font-inter text-[16px] md:text-[18px] font-semibold leading-relaxed tracking-[-0.2px] text-white mb-8 md:mb-12 text-center"
-            >
-              Nem csak jelen vagyunk – uraljuk a felületet. Olyan megjelenést építünk, ami nem hagy hidegen senkit, és tényleg hoz is valamit.
-            </motion.p>
+      <motion.p
+        variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } } }}
+        className="max-w-[650px] font-inter text-[16px] md:text-[18px] font-semibold leading-relaxed tracking-[-0.2px] text-white mb-8 md:mb-12 text-center"
+      >
+        Segítünk a márkáknak megérkezni a jelenbe. Figyelemfelkeltő megjelenés, ami konverziót hoz a digitális térben.
+      </motion.p>
 
-            <motion.div variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } } }} className="mb-12 md:mb-16">
-<Link
-  href="/contact"
-  className="group flex w-full items-center justify-center rounded-full bg-white px-7 py-3.5 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#0A0A0A] overflow-hidden sm:w-auto"
->
-  <span className="relative inline-flex overflow-hidden my-[-2px] py-[2px]">
-    <span className="inline-flex items-center gap-1.5 whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
-      Vágjunk bele
-      <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
-    </span>
-    <span className="absolute left-0 inline-flex items-center gap-1.5 whitespace-nowrap translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-      Vágjunk bele
-      <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
-    </span>
-  </span>
-</Link>
+      <motion.div variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } } }} className="mb-12 md:mb-16">
+        <Link
+          href="/start"
+          className="group flex w-full items-center justify-center rounded-full bg-white px-7 py-3.5 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#0A0A0A] overflow-hidden sm:w-auto"
+        >
+          <span className="relative inline-flex overflow-hidden my-[-2px] py-[2px]">
+            <span className="inline-flex items-center gap-1.5 whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
+              Projekt indítása
+              <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
+            </span>
+            <span className="absolute left-0 inline-flex items-center gap-1.5 whitespace-nowrap translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+              Projekt indítása
+              <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
+            </span>
+          </span>
+        </Link>
+      </motion.div>
 
+    </motion.div>
+  </motion.div>
 
+  <div className="w-full relative z-20 pb-8 md:pb-12"><WorksCarousel /></div>
+</section>
 
-
-
-            </motion.div>
-
-          </motion.div>
-        </motion.div>
-
-        <div className="w-full relative z-20 pb-8 md:pb-12"><WorksCarousel /></div>
-      </section>
 
       <AboutSection />
       <SelectedWork />
@@ -421,69 +486,69 @@ export default function HomePage() {
       <ClientsMarquee />
 
       {/* CTA SECTION */}
-      <section className="relative z-10 w-full bg-[#0A0A0A] py-20 md:py-28 lg:py-36 overflow-hidden" data-theme="dark">
-        <div className={CONTAINER}>
-          <motion.div
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.3 }}
-            variants={{
-              hidden: {},
-              show: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } }
-            }}
-            className="flex flex-col gap-10 md:flex-row md:items-center md:justify-between"
+<section className="relative z-10 w-full bg-[#0A0A0A] py-20 md:py-28 lg:py-36 overflow-hidden" data-theme="dark">
+  <div className={CONTAINER}>
+    <motion.div
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, amount: 0.3 }}
+      variants={{
+        hidden: {},
+        show: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } }
+      }}
+      className="flex flex-col gap-10 md:flex-row md:items-center md:justify-between"
+    >
+      <motion.h2
+        variants={{
+          hidden: { opacity: 0, y: 30 },
+          show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+        }}
+        // Itt lett nagyobb a cím mérete: clamp(3rem, 8vw, 110px)
+        className="text-left font-display text-[clamp(3rem,8vw,110px)] font-extrabold uppercase leading-[1.0] tracking-[-1.5px] text-white"
+      >
+        Vágjunk<br />bele!
+      </motion.h2>
+
+      <div className="flex max-w-[360px] flex-col items-start gap-6 md:items-end md:text-right">
+        <motion.p
+          variants={{
+            hidden: { opacity: 0, y: 15 },
+            show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } }
+          }}
+          className="font-inter text-[18px] leading-[1.6] text-white"
+        >
+          Kérjen azonnali, kötelezettségmentes árajánlatot két perces kérdőívünk segítségével.
+        </motion.p>
+
+        <motion.div
+          variants={{
+            hidden: { opacity: 0, y: 20 },
+            show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } }
+          }}
+        >
+          
+          <Link
+            href="/start"
+            className="group flex w-full items-center justify-center rounded-full bg-white px-7 py-3.5 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#0A0A0A] overflow-hidden sm:w-auto"
           >
-            <motion.h2
-              variants={{
-                hidden: { opacity: 0, y: 30 },
-                show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
-              }}
-              className="text-left font-display text-[clamp(2.1rem,6vw,72px)] font-extrabold uppercase leading-[1.05] tracking-[-1px] text-white"
-            >
-              Vágjunk bele <br /> közösen!
-            </motion.h2>
+            <span className="relative inline-flex overflow-hidden my-[-2px] py-[2px]">
+              <span className="inline-flex items-center gap-1.5 whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
+                Projekt indítása
+                <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
+              </span>
+              <span className="absolute left-0 inline-flex items-center gap-1.5 whitespace-nowrap translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                Projekt indítása
+                <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
+              </span>
+            </span>
+          </Link>
 
-            <div className="flex max-w-[360px] flex-col items-start gap-6 md:items-end md:text-right">
-              <motion.p
-                variants={{
-                  hidden: { opacity: 0, y: 15 },
-                  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } }
-                }}
-                className="font-inter text-[14px] md:text-[15px] leading-[1.6] text-white/60"
-              >
-                Két perc, pár kattintás – és már úton is van az ingyenes, kötelezettség nélküli árajánlatod.
-              </motion.p>
+        </motion.div>
+      </div>
+    </motion.div>
+  </div>
+</section>
 
-              <motion.div
-                variants={{
-                  hidden: { opacity: 0, y: 20 },
-                  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } }
-                }}
-              >
-<Link
-  href="/contact"
-  className="group flex w-full items-center justify-center rounded-full bg-white px-7 py-3.5 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#0A0A0A] overflow-hidden sm:w-auto"
->
-  <span className="relative inline-flex overflow-hidden my-[-2px] py-[2px]">
-    <span className="inline-flex items-center gap-1.5 whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[120%]">
-      Vágjunk bele
-      <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
-    </span>
-    <span className="absolute left-0 inline-flex items-center gap-1.5 whitespace-nowrap translate-y-[120%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-      Vágjunk bele
-      <ArrowUpRight className="h-4 w-4" strokeWidth={2.5} />
-    </span>
-  </span>
-</Link>
-
-
-
-
-              </motion.div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
 
       <Footer />
     </main>

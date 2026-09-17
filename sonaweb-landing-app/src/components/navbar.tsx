@@ -127,9 +127,9 @@ export function Navbar() {
 
   const navLinks = [
     { title: 'Munkáink', href: '/work' },
-    { title: 'Szolgáltatások', href: '/#services', sectionId: 'services' },
-    { title: 'Rólunk', href: '/#about', sectionId: 'about' },
-    { title: 'Kapcsolat', href: '/contact', hasArrow: true },
+    //{ title: 'Szolgáltatások', href: '/services', sectionId: 'services' },
+    { title: 'Kapcsolat', href: '/contact' },
+    { title: 'Bejelentkezés', href: '#', hasArrow: true },
   ]
 
   const drawerVariants = {
@@ -185,7 +185,7 @@ export function Navbar() {
               <Link
                 key={link.title}
                 href={link.href}
-                onClick={(e) => link.sectionId ? handleSectionLink(e, link.sectionId) : handlePageLink(e, link.href)}
+                onClick={(e) => handlePageLink(e, link.href)}
                 className="group flex items-center font-inter text-[14px] !font-semibold uppercase text-white"
               >
                 <span className="relative inline-flex overflow-hidden py-1">
@@ -235,7 +235,7 @@ export function Navbar() {
                     <Link
                       href={link.href}
                       className="group flex w-full items-start py-2 text-left"
-                      onClick={(e) => link.sectionId ? handleSectionLink(e, link.sectionId) : handlePageLink(e, link.href)}
+                      onClick={(e) => handlePageLink(e, link.href)}
                     >
                       <span className="relative inline-flex w-full overflow-hidden py-2 font-display text-[clamp(2rem,7vw,3.5rem)] font-extrabold uppercase text-white">
                         <span className="flex items-center gap-3 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
