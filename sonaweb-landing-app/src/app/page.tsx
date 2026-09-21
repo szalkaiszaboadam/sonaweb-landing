@@ -433,15 +433,15 @@ export function SelectedWork() {
 
 
 const CLIENTS = [
-  { name: 'Fröccsterasz', logo: '/clients/froccsterasz-logo.png' },
-  { name: 'TÜRKIZ Budapest', logo: '/clients/turkiz-budapest-logo.png' },
-  { name: 'Sol Car', logo: '/clients/solcar-logo.png' },
-  { name: 'Bori Tanya Csongrád', logo: '/clients/bori-tanya-csongrad-logo.png' },
-  { name: 'TTMBio', logo: '/clients/ttmbio-logo.png' },
-  { name: 'DUKAY WINERY', logo: '/clients/dukay-winery-logo.png' },
-  { name: 'Juhos Gépbér Kft.', logo: '/clients/juhos-gepber-kft-logo.png' },
-  { name: 'CARL COZMO', logo: '/clients/carl-cozmo-logo.png' },
-  { name: 'GázGépKer', logo: '/clients/gazgepker-logo.png' },
+  { name: 'Fröccsterasz', logo: '/client-logos/froccsterasz-logo.webp' },
+  { name: 'TÜRKIZ Budapest', logo: '/client-logos/turkiz-budapest-logo.webp' },
+  { name: 'Sol Car', logo: '/client-logos/solcar-logo.webp' },
+  { name: 'Bori Tanya Csongrád', logo: '/client-logos/bori-tanya-csongrad-logo.webp' },
+  { name: 'TTMBio', logo: '/client-logos/ttmbio-logo.webp' },
+  { name: 'DUKAY WINERY', logo: '/client-logos/dukay-winery-logo.webp' },
+  { name: 'Juhos Gépbér Kft.', logo: '/client-logos/juhos-gepber-kft-logo.webp' },
+  { name: 'CARL COZMO', logo: '/client-logos/carl-cozmo-logo.webp' },
+  { name: 'GázGépKer', logo: '/client-logos/gazgepker-logo.webp' },
 ]
 
 export function ClientsMarquee() {
@@ -486,7 +486,7 @@ export default function HomePage() {
     <motion.div initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } } }} className="flex w-full flex-col items-center">
 
       <motion.div variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] } } }} className="w-full mb-8 md:mb-10 flex justify-center">
-        <div className="relative w-full h-[28vw] md:h-[18vw] overflow-hidden bg-[#0A0A0A]" style={{ WebkitMask: 'url(/sonaweb-logo-white.png) center/contain no-repeat', mask: 'url(/sonaweb-logo-white.png) center/contain no-repeat', transform: 'translateZ(0)', filter: 'drop-shadow(0 0 45px rgba(191,34,52,0.55)) drop-shadow(0 0 90px rgba(191,34,52,0.35))' }}>
+        <div className="relative w-full h-[28vw] md:h-[18vw] overflow-hidden bg-[#0A0A0A]" style={{ WebkitMask: 'url(/sonaweb-logo-white.webp) center/contain no-repeat', mask: 'url(/sonaweb-logo-white.webp) center/contain no-repeat', transform: 'translateZ(0)', filter: 'drop-shadow(0 0 45px rgba(191,34,52,0.55)) drop-shadow(0 0 90px rgba(191,34,52,0.35))' }}>
           <ShaderGradient className="absolute inset-0 h-full w-full" />
         </div>
       </motion.div>

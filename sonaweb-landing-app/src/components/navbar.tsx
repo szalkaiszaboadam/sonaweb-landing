@@ -173,7 +173,7 @@ export function Navbar() {
             }}
           >
             <img
-              src="/sonaweb-logo-white.png"
+              src="/sonaweb-logo-white.webp"
               alt="SONAWEB"
               className="h-5 w-auto object-contain transition-all duration-500 md:h-7"
             />
