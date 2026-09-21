@@ -56,18 +56,15 @@ export function WorksCarousel() {
     { width: 'w-[325px] md:w-[460px]', height: 'h-[280px] md:h-[390px]' },
   ]
 
-  // Csak kétszeres többszörözés szükséges a CSS animációhoz (feleannyi DOM elem)
   const scrollItems = [...PROJECTS, ...PROJECTS]
 
   return (
     <div className="flex w-full overflow-hidden">
-      {/* w-max az elemek egy sorban tartásához, animate-marquee a CSS animációhoz */}
-      <div className="flex w-max items-start gap-4 px-4 md:gap-6 md:px-6 animate-marquee hover:[animation-play-state:paused]">
+      {/* A hover megállítás eltávolítva, csak az animate-marquee maradt */}
+      <div className="flex w-max items-start gap-4 px-4 md:gap-6 md:px-6 animate-marquee">
         {scrollItems.map((project, i) => {
           const dim = CAROUSEL_DIMS[i % CAROUSEL_DIMS.length]
           const isVideo = project.src.match(/\.(mp4|webm|ogg)$/i)
-          
-          // LCP javítás: Az első két elem azonnal (késleltetés nélkül) töltődik be
           const isPriority = i < 2
 
           return (
@@ -80,7 +77,7 @@ export function WorksCarousel() {
                     muted
                     loop
                     playsInline
-                    preload="none" // Megakadályozza a felesleges háttéradat-forgalmat
+                    preload="none"
                     className="h-full w-full object-cover"
                   />
                 ) : (
@@ -89,7 +86,7 @@ export function WorksCarousel() {
                     alt={project.name || 'Project'}
                     fill
                     priority={isPriority} 
-                    sizes="(max-width: 768px) 350px, 500px" // Hálózati méret optimalizálása mobilra
+                    sizes="(max-width: 768px) 350px, 500px"
                     className="object-cover"
                   />
                 )}
@@ -454,16 +451,17 @@ const CLIENTS = [
 ]
 
 export function ClientsMarquee() {
-  // Elég kétszer duplikálni a zökkenőmentes görgetéshez
+  // A zavartalan és folyamatos görgetéshez elég kétszer duplikálni a tömböt
   const marqueeClients = [...CLIENTS, ...CLIENTS]
 
   return (
     <div className="relative z-10 w-full bg-[#0A0A0A] pb-20 md:pb-28 lg:pb-36 flex flex-col" data-theme="dark">
       <div className="relative flex w-full overflow-x-hidden">
+        {/* Szélárnyékok (Fade-out effektek a széleken) */}
         <div className="pointer-events-none absolute left-0 top-0 bottom-0 z-10 w-24 bg-gradient-to-r from-[#0A0A0A] to-transparent md:w-48 lg:w-64" />
         <div className="pointer-events-none absolute right-0 top-0 bottom-0 z-10 w-24 bg-gradient-to-l from-[#0A0A0A] to-transparent md:w-48 lg:w-64" />
         
-        {/* CSS alapú lassú görgetés */}
+        {/* Folyamatos lassú görgetés, hover megállítás nélkül */}
         <div className="flex w-max shrink-0 items-center gap-16 pr-16 md:gap-24 md:pr-24 animate-marquee-slow">
           {marqueeClients.map((client, i) => (
             <div key={i} className="flex shrink-0 items-center justify-center">
