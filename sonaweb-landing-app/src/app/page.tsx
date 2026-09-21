@@ -48,18 +48,6 @@ const PROJECTS = [
 ]
 
 export function WorksCarousel() {
-  const baseX = useMotionValue(0)
-  const SPEED = -0.008
-  const velocity = useMotionValue(SPEED)
-  const smoothVelocity = useSpring(velocity, { damping: 50, stiffness: 400 })
-
-  useAnimationFrame((t, delta) => {
-    let moveBy = smoothVelocity.get() * (delta / 16)
-    baseX.set(baseX.get() + moveBy)
-  })
-
-  const x = useTransform(baseX, (v) => `${wrap(-50, 0, v)}%`)
-
   const CAROUSEL_DIMS = [
     { width: 'w-[350px] md:w-[500px]', height: 'h-[250px] md:h-[360px]' },
     { width: 'w-[245px] md:w-[345px]', height: 'h-[375px] md:h-[530px]' },
@@ -68,15 +56,19 @@ export function WorksCarousel() {
     { width: 'w-[325px] md:w-[460px]', height: 'h-[280px] md:h-[390px]' },
   ]
 
+  // Csak kétszeres többszörözés szükséges a CSS animációhoz (feleannyi DOM elem)
+  const scrollItems = [...PROJECTS, ...PROJECTS]
+
   return (
     <div className="flex w-full overflow-hidden">
-      <motion.div
-        className="flex items-start gap-4 px-4 md:gap-6 md:px-6"
-        style={{ x }}
-      >
-        {[...PROJECTS, ...PROJECTS, ...PROJECTS, ...PROJECTS].map((project, i) => {
+      {/* w-max az elemek egy sorban tartásához, animate-marquee a CSS animációhoz */}
+      <div className="flex w-max items-start gap-4 px-4 md:gap-6 md:px-6 animate-marquee hover:[animation-play-state:paused]">
+        {scrollItems.map((project, i) => {
           const dim = CAROUSEL_DIMS[i % CAROUSEL_DIMS.length]
-          const isVideo = project.src.match(/\.(mp4|webm|ogg)$/i) // Megvizsgáljuk a kiterjesztést
+          const isVideo = project.src.match(/\.(mp4|webm|ogg)$/i)
+          
+          // LCP javítás: Az első két elem azonnal (késleltetés nélkül) töltődik be
+          const isPriority = i < 2
 
           return (
             <div key={i} className="flex shrink-0 flex-col">
@@ -88,6 +80,7 @@ export function WorksCarousel() {
                     muted
                     loop
                     playsInline
+                    preload="none" // Megakadályozza a felesleges háttéradat-forgalmat
                     className="h-full w-full object-cover"
                   />
                 ) : (
@@ -95,6 +88,8 @@ export function WorksCarousel() {
                     src={project.src}
                     alt={project.name || 'Project'}
                     fill
+                    priority={isPriority} 
+                    sizes="(max-width: 768px) 350px, 500px" // Hálózati méret optimalizálása mobilra
                     className="object-cover"
                   />
                 )}
@@ -102,10 +97,11 @@ export function WorksCarousel() {
             </div>
           )
         })}
-      </motion.div>
+      </div>
     </div>
   )
 }
+
 
 const SERVICES = [
   { 
@@ -361,12 +357,23 @@ const EDITORIAL_CONFIGS = [
 ]
 
 
+
+
 function ProjectItem({ project, config }: { project: (typeof PROJECTS2)[0], config: (typeof EDITORIAL_CONFIGS)[0] }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: containerRef, offset: ['start end', 'end start'] })
   const y = useTransform(scrollYProgress, [0, 1], ['-18%', '18%'])
 
   const { setCursor, clearCursor } = useCustomCursor()
+
+  // Eszközméret figyelése a parallax animációhoz
+  const [isDesktop, setIsDesktop] = useState(true)
+  useEffect(() => {
+    const check = () => setIsDesktop(window.innerWidth >= 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
 
   return (
     <motion.div
@@ -383,12 +390,15 @@ function ProjectItem({ project, config }: { project: (typeof PROJECTS2)[0], conf
         onClick={clearCursor}
       >
         <div 
-  onMouseEnter={() => setCursor({ active: true, label: 'Megnézem' })}
-  onMouseLeave={clearCursor}
-  className={`relative mb-4 w-full overflow-hidden rounded-2xl bg-white/[0.02] ${config.aspect}`}
->
-
-          <motion.div style={{ y }} className="relative -top-[20%] h-[140%] w-full will-change-transform">
+          onMouseEnter={() => setCursor({ active: true, label: 'Megnézem' })}
+          onMouseLeave={clearCursor}
+          className={`relative mb-4 w-full overflow-hidden rounded-2xl bg-white/[0.02] ${config.aspect}`}
+        >
+          {/* Mobilon letiltjuk a pozícióeltolást és visszaállítjuk a magasságot 100%-ra */}
+          <motion.div 
+            style={isDesktop ? { y } : { y: 0 }} 
+            className={`relative w-full will-change-transform ${isDesktop ? 'h-[140%] -top-[20%]' : 'h-full top-0'}`}
+          >
             <Image src={project.image} alt={project.title} fill className="object-cover" />
           </motion.div>
         </div>
@@ -402,7 +412,6 @@ function ProjectItem({ project, config }: { project: (typeof PROJECTS2)[0], conf
     </motion.div>
   )
 }
-
 
 
 export function SelectedWork() {
@@ -445,36 +454,35 @@ const CLIENTS = [
 ]
 
 export function ClientsMarquee() {
+  // Elég kétszer duplikálni a zökkenőmentes görgetéshez
+  const marqueeClients = [...CLIENTS, ...CLIENTS]
+
   return (
     <div className="relative z-10 w-full bg-[#0A0A0A] pb-20 md:pb-28 lg:pb-36 flex flex-col" data-theme="dark">
       <div className="relative flex w-full overflow-x-hidden">
         <div className="pointer-events-none absolute left-0 top-0 bottom-0 z-10 w-24 bg-gradient-to-r from-[#0A0A0A] to-transparent md:w-48 lg:w-64" />
         <div className="pointer-events-none absolute right-0 top-0 bottom-0 z-10 w-24 bg-gradient-to-l from-[#0A0A0A] to-transparent md:w-48 lg:w-64" />
-        <motion.div
-          animate={{ x: ['0%', '-50%'] }}
-          transition={{ duration: 80, repeat: Infinity, ease: 'linear' }}
-          className="flex shrink-0 items-center gap-16 pr-16 md:gap-24 md:pr-24"
-        >
-          {[...CLIENTS, ...CLIENTS, ...CLIENTS].map((client, i) => (
+        
+        {/* CSS alapú lassú görgetés */}
+        <div className="flex w-max shrink-0 items-center gap-16 pr-16 md:gap-24 md:pr-24 animate-marquee-slow">
+          {marqueeClients.map((client, i) => (
             <div key={i} className="flex shrink-0 items-center justify-center">
-              {/* Itt a varázslat: a doboz most sokkal magasabb, így a négyzetes logók megnőhetnek, 
-                  de a széles logókat a w-44 továbbra is kordában tartja */}
               <div className="relative h-20 w-32 md:h-24 md:w-44">
                 <Image
                   src={client.logo}
                   alt={client.name}
                   fill
+                  sizes="(max-width: 768px) 128px, 176px"
                   className="object-contain brightness-0 invert"
                 />
               </div>
             </div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </div>
   )
 }
-
 
 
 export default function HomePage() {

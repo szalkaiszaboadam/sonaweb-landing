@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-/* Custom betűtípusok (sima CSS osztályként, hogy a VS Code ne jelezzen hibát) */
+/* Custom betűtípusok és utilitások */
 @layer utilities {
   .font-display {
     font-family: var(--font-clash), sans-serif !important;
@@ -22,8 +22,13 @@
     color: transparent;
   }
 
+  /* Lassított animációk a sliderhez */
   .animate-marquee {
-    animation: marquee-x var(--marquee-duration, 32s) linear infinite;
+    animation: marquee-scroll 50s linear infinite;
+  }
+
+  .animate-marquee-slow {
+    animation: marquee-scroll 80s linear infinite;
   }
 
   .no-scrollbar {
@@ -37,7 +42,6 @@
 
 /* 
  * Csak a legszükségesebb Tailwind v4 téma beállítások 
- * (A felesleges sidebar és chart színek eltávolítva)
  */
 @theme inline {
   --color-border: var(--border);
@@ -67,12 +71,15 @@
   }
 }
 
-@keyframes marquee-x {
+/* Kulcskockák a végtelenített görgetéshez */
+@keyframes marquee-scroll {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
 }
 
-.marquee-paused:hover .animate-marquee {
+/* Megállítás hover esetén */
+.marquee-paused:hover .animate-marquee,
+.marquee-paused:hover .animate-marquee-slow {
   animation-play-state: paused;
 }
 
