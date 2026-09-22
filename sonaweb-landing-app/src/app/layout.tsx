@@ -10,6 +10,7 @@ export const metadata: Metadata = {
     template: '%s - SONAWEB.',
     default: 'SONAWEB.',
   },
+  description: 'Segítünk a márkáknak megérkezni a jelenbe. Figyelemfelkeltő megjelenés, ami konverziót hoz a digitális térben.',
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -32,8 +33,6 @@ const inter = Inter({
   display: 'swap',
 })
 
-
-
 export default function RootLayout({
   children,
 }: {
@@ -41,12 +40,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="hu" className={`${clashDisplay.variable} ${inter.variable}`}>
-      <head>
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_outward"
-        />
-      </head>
       <body className="font-inter antialiased">
         <CustomCursorProvider>
           <SmoothScroll>

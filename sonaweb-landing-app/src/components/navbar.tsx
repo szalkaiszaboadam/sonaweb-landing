@@ -6,6 +6,7 @@ import { usePathname, useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'motion/react'
 import { useLenis } from 'lenis/react'
 import { ArrowUpRight } from 'lucide-react'
+import Image from 'next/image'
 
 export const CONTAINER = "mx-auto w-full max-w-[1800px] px-6 sm:px-8 md:px-12 lg:px-20 xl:px-28 2xl:px-36"
 
@@ -172,11 +173,14 @@ export function Navbar() {
               }
             }}
           >
-            <img
-              src="/sonaweb-logo-white.webp"
-              alt="SONAWEB"
-              className="h-5 w-auto object-contain transition-all duration-500 md:h-7"
-            />
+            <Image
+  src="/sonaweb-logo-white.webp"
+  alt="SONAWEB"
+  width={140}
+  height={28}
+  className="h-5 w-auto object-contain transition-all duration-500 md:h-7"
+  priority
+/>
           </Link>
 
           <div className="hidden md:flex items-center gap-8">

@@ -71,15 +71,17 @@ export function WorksCarousel() {
             <div key={i} className="flex shrink-0 flex-col">
               <div className={`relative ${dim.width} ${dim.height} overflow-hidden rounded-2xl bg-white/5`}>
                 {isVideo ? (
-                  <video
-                    src={project.src}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="none"
-                    className="h-full w-full object-cover"
-                  />
+                 <video
+  src={project.src}
+  autoPlay
+  muted
+  loop
+  playsInline
+  preload="none"
+  poster="/carl-cozmo-2.webp" /* Vagy bármilyen generált borítókép a videóhoz */
+  className="h-full w-full object-cover"
+/>
+
                 ) : (
                   <Image
                     src={project.src}
@@ -487,7 +489,21 @@ export default function HomePage() {
   return (
     <main className="bg-[#0A0A0A] font-inter text-white selection:bg-[#BF2234] selection:text-white">
       {/* Hero */}
+      
 <section data-theme="dark" className="relative flex min-h-[100svh] w-full flex-col items-center justify-between overflow-hidden bg-[#0A0A0A] pt-[15vh] md:pt-[20vh]">
+  
+  
+    {/* LCP Preload: Ide rakjuk a rejtett képet, hogy a böngésző azonnal elkezdje letölteni a CSS maszkot */}
+  <Image 
+    src="/sonaweb-logo-white.webp" 
+    alt="preload-mask" 
+    width={0} 
+    height={0} 
+    sizes="100vw" 
+    priority 
+    className="hidden" 
+  />
+  
   <motion.div className={`${CONTAINER} relative z-30 flex flex-1 flex-col items-center justify-center text-center -mt-12 md:-mt-20`}>
     <motion.div initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } } }} className="flex w-full flex-col items-center">
 
