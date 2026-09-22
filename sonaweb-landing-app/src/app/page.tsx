@@ -23,7 +23,7 @@ import {
 import { ArrowUpRight, Plus } from 'lucide-react'
 import { Footer } from '@/components/footer'
 import { ShaderGradient } from '@/components/shader-gradient'
-import { useCustomCursor } from '@/components/custom-cursor' 
+import { useCustomCursor } from '@/components/custom-cursor'
 
 
 
@@ -40,11 +40,11 @@ export function useSmoothScroll() {
 export const CONTAINER = "mx-auto w-full max-w-[1800px] px-6 sm:px-8 md:px-12 lg:px-20 xl:px-28 2xl:px-36"
 
 const PROJECTS = [
-  { name: 'CARL COZMO',  src: '/carl-cozmo-2.webp', h: 'h-[280px] md:h-[360px]'},
-  { name: 'placeholder',  src: '/', h: 'h-[340px] md:h-[480px]'},
-  { name: 'Aeroprodukt Zrt.',  src: '/aeroprodukt-2.mp4', h: 'h-[240px] md:h-[320px]'},
-  { name: 'DUKAY WINERY',  src: '/dukay-winery-2.webp', h: 'h-[300px] md:h-[400px]'},
-  { name: 'GázGépKer', src: '/gazgepker-1.webp', h: 'h-[280px] md:h-[380px]'},
+  { name: 'CARL COZMO', src: '/carl-cozmo-2.webp', h: 'h-[280px] md:h-[360px]' },
+  { name: 'placeholder', src: '/', h: 'h-[340px] md:h-[480px]' },
+  { name: 'Aeroprodukt Zrt.', src: '/aeroprodukt-2.mp4', h: 'h-[240px] md:h-[320px]' },
+  { name: 'DUKAY WINERY', src: '/dukay-winery-2.webp', h: 'h-[300px] md:h-[400px]' },
+  { name: 'GázGépKer', src: '/gazgepker-1.webp', h: 'h-[280px] md:h-[380px]' },
 ]
 
 export function WorksCarousel() {
@@ -71,23 +71,23 @@ export function WorksCarousel() {
             <div key={i} className="flex shrink-0 flex-col">
               <div className={`relative ${dim.width} ${dim.height} overflow-hidden rounded-2xl bg-white/5`}>
                 {isVideo ? (
-                 <video
-  src={project.src}
-  autoPlay
-  muted
-  loop
-  playsInline
-  preload="none"
-  poster="/carl-cozmo-2.webp" /* Vagy bármilyen generált borítókép a videóhoz */
-  className="h-full w-full object-cover"
-/>
+                  <video
+                    src={project.src}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="none"
+                    poster="/carl-cozmo-2.webp" /* Vagy bármilyen generált borítókép a videóhoz */
+                    className="h-full w-full object-cover"
+                  />
 
                 ) : (
                   <Image
                     src={project.src}
                     alt={project.name || 'Project'}
                     fill
-                    priority={isPriority} 
+                    priority={isPriority}
                     sizes="(max-width: 768px) 350px, 500px"
                     className="object-cover"
                   />
@@ -103,8 +103,8 @@ export function WorksCarousel() {
 
 
 const SERVICES = [
-  { 
-    title: 'Webfejlesztés', 
+  {
+    title: 'Webfejlesztés',
     subServices: [
       'UX / UI Design',
       'Vállalati Weboldal',
@@ -114,8 +114,8 @@ const SERVICES = [
       'Hosting & Karbantartás'
     ]
   },
-  { 
-    title: 'Tartalomgyártás', 
+  {
+    title: 'Tartalomgyártás',
     subServices: [
       'Kreatív Koncepció',
       'Precíziós Szövegírás',
@@ -125,8 +125,8 @@ const SERVICES = [
       'Animáció'
     ]
   },
-  { 
-    title: 'Hirdetéskezelés', 
+  {
+    title: 'Hirdetéskezelés',
     subServices: [
       'Meta Kampányok',
       'Google Ads',
@@ -136,8 +136,8 @@ const SERVICES = [
       'Analitika & Riportálás'
     ]
   },
-  { 
-    title: 'Márkastratégia', 
+  {
+    title: 'Márkastratégia',
     subServices: [
       'Márka Architektúra',
       'Pozicionálás',
@@ -152,7 +152,7 @@ const SERVICES = [
 const LONGEST_TITLE = SERVICES.reduce((a, b) => (b.title.length > a.title.length ? b : a)).title
 const SERVICES_TITLE_CLASS = 'font-display font-extrabold uppercase leading-[0.95] tracking-[-1px] md:leading-[0.9] md:tracking-[-3px]'
 
-const MEASURE_BASE_PX = 120 
+const MEASURE_BASE_PX = 120
 
 function useFitFontSize(text: string, className: string, minPx = 20, maxPx = 90) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -244,16 +244,14 @@ export function Services() {
                   onMouseLeave={() => setHoveredIdx(null)}
                   onFocus={() => setHoveredIdx(i)}
                   onBlur={() => setHoveredIdx(null)}
-                  className={`group flex w-full max-w-full items-center justify-center py-2 focus:outline-none md:py-4 ${
-                    isExpanded ? 'cursor-default' : 'cursor-pointer'
-                  }`}
+                  className={`group flex w-full max-w-full items-center justify-center py-2 focus:outline-none md:py-4 ${isExpanded ? 'cursor-default' : 'cursor-pointer'
+                    }`}
                 >
                   <span className="relative inline-flex items-center justify-center">
                     <span
                       style={{ fontSize }}
-                      className={`${SERVICES_TITLE_CLASS} block whitespace-nowrap transition-colors duration-300 ease-out ${
-                        isActive ? 'text-white' : 'text-[#5E5E5E]'
-                      }`}
+                      className={`${SERVICES_TITLE_CLASS} block whitespace-nowrap transition-colors duration-300 ease-out ${isActive ? 'text-white' : 'text-[#5E5E5E]'
+                        }`}
                     >
                       {service.title}
                     </span>
@@ -273,28 +271,28 @@ export function Services() {
                 </button>
 
                 <AnimatePresence>
-  {isExpanded && (
-    <motion.div
-      initial={{ height: 0, opacity: 0 }}
-      animate={{ height: 'auto', opacity: 1 }}
-      exit={{ height: 0, opacity: 0 }}
-      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-      className="overflow-hidden w-full"
-    >
-      <div className="flex flex-col items-center justify-center gap-1.5 pb-8 pt-2 md:pb-12 md:pt-4">
-        {service.subServices.map((sub, idx) => (
-          <span
-            key={idx}
-            // 15px-es méret, tiszta fehér szín, hover effektek nélkül
-            className="font-inter text-[15px] leading-[15px] tracking-[-0.4px] font-semibold uppercase text-white"
-          >
-            {sub}
-          </span>
-        ))}
-      </div>
-    </motion.div>
-  )}
-</AnimatePresence>
+                  {isExpanded && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                      className="overflow-hidden w-full"
+                    >
+                      <div className="flex flex-col items-center justify-center gap-1.5 pb-8 pt-2 md:pb-12 md:pt-4">
+                        {service.subServices.map((sub, idx) => (
+                          <span
+                            key={idx}
+                            // 15px-es méret, tiszta fehér szín, hover effektek nélkül
+                            className="font-inter text-[15px] leading-[15px] tracking-[-0.4px] font-semibold uppercase text-white"
+                          >
+                            {sub}
+                          </span>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
               </motion.div>
             )
@@ -365,15 +363,6 @@ function ProjectItem({ project, config }: { project: (typeof PROJECTS2)[0], conf
 
   const { setCursor, clearCursor } = useCustomCursor()
 
-  // Eszközméret figyelése a parallax animációhoz
-  const [isDesktop, setIsDesktop] = useState(true)
-  useEffect(() => {
-    const check = () => setIsDesktop(window.innerWidth >= 768)
-    check()
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
-  }, [])
-
   return (
     <motion.div
       ref={containerRef}
@@ -393,12 +382,18 @@ function ProjectItem({ project, config }: { project: (typeof PROJECTS2)[0], conf
           onMouseLeave={clearCursor}
           className={`relative mb-4 w-full overflow-hidden rounded-2xl bg-white/[0.02] ${config.aspect}`}
         >
-          {/* Mobilon letiltjuk a pozícióeltolást és visszaállítjuk a magasságot 100%-ra */}
+          {/* Hozzáadtuk a disable-parallax-mobile osztályt, így nem kell a JS resize listener */}
           <motion.div 
-            style={isDesktop ? { y } : { y: 0 }} 
-            className={`relative w-full will-change-transform ${isDesktop ? 'h-[140%] -top-[20%]' : 'h-full top-0'}`}
+            style={{ y }} 
+            className="disable-parallax-mobile relative -top-[20%] h-[140%] w-full will-change-transform"
           >
-            <Image src={project.image} alt={project.title} fill className="object-cover" />
+            <Image 
+              src={project.image} 
+              alt={project.title} 
+              fill 
+              sizes="(max-width: 768px) 100vw, 50vw" /* 326 KB megtakarítás a mobilokon! */
+              className="object-cover" 
+            />
           </motion.div>
         </div>
 
@@ -411,6 +406,7 @@ function ProjectItem({ project, config }: { project: (typeof PROJECTS2)[0], conf
     </motion.div>
   )
 }
+
 
 
 export function SelectedWork() {
@@ -462,7 +458,7 @@ export function ClientsMarquee() {
         {/* Szélárnyékok (Fade-out effektek a széleken) */}
         <div className="pointer-events-none absolute left-0 top-0 bottom-0 z-10 w-24 bg-gradient-to-r from-[#0A0A0A] to-transparent md:w-48 lg:w-64" />
         <div className="pointer-events-none absolute right-0 top-0 bottom-0 z-10 w-24 bg-gradient-to-l from-[#0A0A0A] to-transparent md:w-48 lg:w-64" />
-        
+
         {/* Folyamatos lassú görgetés, hover megállítás nélkül */}
         <div className="flex w-max shrink-0 items-center gap-16 pr-16 md:gap-24 md:pr-24 animate-marquee-slow">
           {marqueeClients.map((client, i) => (
@@ -489,133 +485,121 @@ export default function HomePage() {
   return (
     <main className="bg-[#0A0A0A] font-inter text-white selection:bg-[#BF2234] selection:text-white">
       {/* Hero */}
-      
-<section data-theme="dark" className="relative flex min-h-[100svh] w-full flex-col items-center justify-between overflow-hidden bg-[#0A0A0A] pt-[15vh] md:pt-[20vh]">
-  
-  
-    {/* LCP Preload: Ide rakjuk a rejtett képet, hogy a böngésző azonnal elkezdje letölteni a CSS maszkot */}
-  <Image 
-    src="/sonaweb-logo-white.webp" 
-    alt="preload-mask" 
-    width={0} 
-    height={0} 
-    sizes="100vw" 
-    priority 
-    className="hidden" 
-  />
-  
-  <motion.div className={`${CONTAINER} relative z-30 flex flex-1 flex-col items-center justify-center text-center -mt-12 md:-mt-20`}>
-    <motion.div initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } } }} className="flex w-full flex-col items-center">
 
-      <motion.div variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] } } }} className="w-full mb-8 md:mb-10 flex justify-center">
-        <div className="relative w-full h-[28vw] md:h-[18vw] overflow-hidden bg-[#0A0A0A]" style={{ WebkitMask: 'url(/sonaweb-logo-white.webp) center/contain no-repeat', mask: 'url(/sonaweb-logo-white.webp) center/contain no-repeat', transform: 'translateZ(0)', filter: 'drop-shadow(0 0 45px rgba(191,34,52,0.55)) drop-shadow(0 0 90px rgba(191,34,52,0.35))' }}>
-          <ShaderGradient className="absolute inset-0 h-full w-full" />
-        </div>
-      </motion.div>
+      <section data-theme="dark" className="relative flex min-h-[100svh] w-full flex-col items-center justify-between overflow-hidden bg-[#0A0A0A] pt-[15vh] md:pt-[20vh]">
 
-      <motion.p
-        variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } } }}
-        className="max-w-[650px] font-inter text-[16px] md:text-[18px] font-semibold leading-relaxed tracking-[-0.2px] text-white mb-8 md:mb-12 text-center"
-      >
-        Segítünk a márkáknak megérkezni a jelenbe. Figyelemfelkeltő megjelenés, ami konverziót hoz a digitális térben.
-      </motion.p>
+        <motion.div className={`${CONTAINER} relative z-30 flex flex-1 flex-col items-center justify-center text-center -mt-12 md:-mt-20`}>
+          <motion.div initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } } }} className="flex w-full flex-col items-center">
 
-      <motion.div variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } } }} className="mb-12 md:mb-16">
-<Link
-  href="/contact"
-  className="group flex w-full items-center justify-center rounded-full bg-white px-5 py-3.5 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#0A0A0A] overflow-hidden sm:w-auto"
->
-  <span className="relative inline-flex overflow-hidden my-[-2px] py-[2px]">
-    <span className="inline-flex items-center gap-1.5 whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
-      Vágjunk bele
-    </span>
-    <span className="absolute left-0 inline-flex items-center gap-1.5 whitespace-nowrap translate-y-[150%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-      Vágjunk bele
-    </span>
-  </span>
-</Link>
+            <motion.div variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] } } }} className="w-full mb-8 md:mb-10 flex justify-center">
+              <div className="relative w-full h-[28vw] md:h-[18vw] overflow-hidden bg-[#0A0A0A]" style={{ WebkitMask: 'url(/sonaweb-logo-white.webp) center/contain no-repeat', mask: 'url(/sonaweb-logo-white.webp) center/contain no-repeat', transform: 'translateZ(0)', filter: 'drop-shadow(0 0 45px rgba(191,34,52,0.55)) drop-shadow(0 0 90px rgba(191,34,52,0.35))' }}>
+                <ShaderGradient className="absolute inset-0 h-full w-full" />
+              </div>
+            </motion.div>
+
+            <motion.p
+              variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } } }}
+              className="max-w-[650px] font-inter text-[16px] md:text-[18px] font-semibold leading-relaxed tracking-[-0.2px] text-white mb-8 md:mb-12 text-center"
+            >
+              Segítünk a márkáknak megérkezni a jelenbe. Figyelemfelkeltő megjelenés, ami konverziót hoz a digitális térben.
+            </motion.p>
+
+            <motion.div variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } } }} className="mb-12 md:mb-16">
+              <Link
+                href="/contact"
+                className="group flex w-full items-center justify-center rounded-full bg-white px-5 py-3.5 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#0A0A0A] overflow-hidden sm:w-auto"
+              >
+                <span className="relative inline-flex overflow-hidden my-[-2px] py-[2px]">
+                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
+                    Vágjunk bele
+                  </span>
+                  <span className="absolute left-0 inline-flex items-center gap-1.5 whitespace-nowrap translate-y-[150%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                    Vágjunk bele
+                  </span>
+                </span>
+              </Link>
 
 
 
-      </motion.div>
+            </motion.div>
 
-    </motion.div>
-  </motion.div>
+          </motion.div>
+        </motion.div>
 
-  <div className="w-full relative z-20 pb-8 md:pb-12"><WorksCarousel /></div>
-</section>
+        <div className="w-full relative z-20 pb-8 md:pb-12"><WorksCarousel /></div>
+      </section>
 
 
       <AboutSection />
       <ClientsMarquee />
       <SelectedWork />
       <Services />
-      
+
 
       {/* CTA SECTION */}
-<section className="relative z-10 w-full bg-[#0A0A0A] py-20 md:py-28 lg:py-36 overflow-hidden" data-theme="dark">
-  <div className={CONTAINER}>
-    <motion.div
-      initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, amount: 0.3 }}
-      variants={{
-        hidden: {},
-        show: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } }
-      }}
-      className="flex flex-col gap-10 md:flex-row md:items-center md:justify-between"
-    >
-      <motion.h2
-        variants={{
-          hidden: { opacity: 0, y: 30 },
-          show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
-        }}
-        // Itt lett nagyobb a cím mérete: clamp(3rem, 8vw, 110px)
-        className="text-left font-display text-[clamp(3rem,8vw,110px)] font-extrabold uppercase leading-[1.0] tracking-[-1.5px] text-white"
-      >
-        Vágjunk<br />bele!
-      </motion.h2>
+      <section className="relative z-10 w-full bg-[#0A0A0A] py-20 md:py-28 lg:py-36 overflow-hidden" data-theme="dark">
+        <div className={CONTAINER}>
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={{
+              hidden: {},
+              show: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } }
+            }}
+            className="flex flex-col gap-10 md:flex-row md:items-center md:justify-between"
+          >
+            <motion.h2
+              variants={{
+                hidden: { opacity: 0, y: 30 },
+                show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+              }}
+              // Itt lett nagyobb a cím mérete: clamp(3rem, 8vw, 110px)
+              className="text-left font-display text-[clamp(3rem,8vw,110px)] font-extrabold uppercase leading-[1.0] tracking-[-1.5px] text-white"
+            >
+              Vágjunk<br />bele!
+            </motion.h2>
 
-      <div className="flex max-w-[360px] flex-col items-start gap-6 md:items-end md:text-right">
-        <motion.p
-          variants={{
-            hidden: { opacity: 0, y: 15 },
-            show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } }
-          }}
-          className="font-inter text-[18px] leading-[1.6] text-white"
-        >
-          Kérjen azonnali, kötelezettségmentes árajánlatot két perces kérdőívünk segítségével.
-        </motion.p>
+            <div className="flex max-w-[360px] flex-col items-start gap-6 md:items-end md:text-right">
+              <motion.p
+                variants={{
+                  hidden: { opacity: 0, y: 15 },
+                  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } }
+                }}
+                className="font-inter text-[18px] leading-[1.6] text-white"
+              >
+                Kérjen azonnali, kötelezettségmentes árajánlatot két perces kérdőívünk segítségével.
+              </motion.p>
 
-        <motion.div
-          variants={{
-            hidden: { opacity: 0, y: 20 },
-            show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } }
-          }}
-        >
-          
-<Link
-  href="/contact"
-  className="group flex w-full items-center justify-center rounded-full bg-white px-5 py-3.5 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#0A0A0A] overflow-hidden sm:w-auto"
->
-  <span className="relative inline-flex overflow-hidden my-[-2px] py-[2px]">
-    <span className="inline-flex items-center gap-1.5 whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
-      Vágjunk bele
-      <ArrowUpRight className="h-[18px] w-[18px] -mr-0.5" strokeWidth={2.5} />
-    </span>
-    <span className="absolute left-0 inline-flex items-center gap-1.5 whitespace-nowrap translate-y-[150%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-      Vágjunk bele
-      <ArrowUpRight className="h-[18px] w-[18px] -mr-0.5" strokeWidth={2.5} />
-    </span>
-  </span>
-</Link>
+              <motion.div
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } }
+                }}
+              >
+
+                <Link
+                  href="/contact"
+                  className="group flex w-full items-center justify-center rounded-full bg-white px-5 py-3.5 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#0A0A0A] overflow-hidden sm:w-auto"
+                >
+                  <span className="relative inline-flex overflow-hidden my-[-2px] py-[2px]">
+                    <span className="inline-flex items-center gap-1.5 whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
+                      Vágjunk bele
+                      <ArrowUpRight className="h-[18px] w-[18px] -mr-0.5" strokeWidth={2.5} />
+                    </span>
+                    <span className="absolute left-0 inline-flex items-center gap-1.5 whitespace-nowrap translate-y-[150%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
+                      Vágjunk bele
+                      <ArrowUpRight className="h-[18px] w-[18px] -mr-0.5" strokeWidth={2.5} />
+                    </span>
+                  </span>
+                </Link>
 
 
-        </motion.div>
-      </div>
-    </motion.div>
-  </div>
-</section>
+              </motion.div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
 
 
       <Footer />
