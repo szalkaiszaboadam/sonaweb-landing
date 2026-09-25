@@ -19,16 +19,18 @@ export const metadata: Metadata = {
   }
 }
 
+// Csak a ténylegesen használt vastagságok (font-extrabold a UI-ban + fontWeight="900" a footer SVG logóban)
 const clashDisplay = Montserrat({
   subsets: ['latin'],
-  weight: ['600', '700', '800', '900'],
+  weight: ['800', '900'],
   variable: '--font-clash',
   display: 'swap',
 })
 
+// Csak a ténylegesen használt vastagságok (alap szöveg 400, font-medium 500, font-semibold 600)
 const inter = Inter({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800', '900'],
+  weight: ['400', '500', '600'],
   variable: '--font-inter',
   display: 'swap',
 })

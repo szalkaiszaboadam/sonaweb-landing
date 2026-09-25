@@ -41,7 +41,6 @@ export const CONTAINER = "mx-auto w-full max-w-[1800px] px-6 sm:px-8 md:px-12 lg
 
 const PROJECTS = [
   { name: 'CARL COZMO', src: '/carl-cozmo-2.webp', h: 'h-[280px] md:h-[360px]' },
-  { name: 'placeholder', src: '/', h: 'h-[340px] md:h-[480px]' },
   { name: 'Aeroprodukt Zrt.', src: '/aeroprodukt-2.mp4', h: 'h-[240px] md:h-[320px]' },
   { name: 'DUKAY WINERY', src: '/dukay-winery-2.webp', h: 'h-[300px] md:h-[400px]' },
   { name: 'GázGépKer', src: '/gazgepker-1.webp', h: 'h-[280px] md:h-[380px]' },
@@ -49,11 +48,11 @@ const PROJECTS = [
 
 export function WorksCarousel() {
   const CAROUSEL_DIMS = [
-    { width: 'w-[350px] md:w-[500px]', height: 'h-[250px] md:h-[360px]' },
-    { width: 'w-[245px] md:w-[345px]', height: 'h-[375px] md:h-[530px]' },
-    { width: 'w-[290px] md:w-[410px]', height: 'h-[290px] md:h-[410px]' },
-    { width: 'w-[260px] md:w-[370px]', height: 'h-[335px] md:h-[470px]' },
-    { width: 'w-[325px] md:w-[460px]', height: 'h-[280px] md:h-[390px]' },
+    { width: 'w-[350px] md:w-[500px]', height: 'h-[250px] md:h-[360px]', sizes: '(max-width: 768px) 350px, 500px' },
+    { width: 'w-[245px] md:w-[345px]', height: 'h-[375px] md:h-[530px]', sizes: '(max-width: 768px) 245px, 345px' },
+    { width: 'w-[290px] md:w-[410px]', height: 'h-[290px] md:h-[410px]', sizes: '(max-width: 768px) 290px, 410px' },
+    { width: 'w-[260px] md:w-[370px]', height: 'h-[335px] md:h-[470px]', sizes: '(max-width: 768px) 260px, 370px' },
+    { width: 'w-[325px] md:w-[460px]', height: 'h-[280px] md:h-[390px]', sizes: '(max-width: 768px) 325px, 460px' },
   ]
 
   const scrollItems = [...PROJECTS, ...PROJECTS]
@@ -88,7 +87,7 @@ export function WorksCarousel() {
                     alt={project.name || 'Project'}
                     fill
                     priority={isPriority}
-                    sizes="(max-width: 768px) 350px, 500px"
+                    sizes={dim.sizes}
                     className="object-cover"
                   />
                 )}
