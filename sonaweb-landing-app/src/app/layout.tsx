@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter, Montserrat } from 'next/font/google'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import './globals.css'
 import { Navbar } from '@/components/navbar'
 import { CustomCursorProvider } from '@/components/custom-cursor'
@@ -49,6 +50,7 @@ export default function RootLayout({
             {children}
           </SmoothScroll>
         </CustomCursorProvider>
+        <SpeedInsights />
       </body>
     </html>
   )
