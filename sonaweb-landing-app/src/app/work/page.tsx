@@ -86,14 +86,16 @@ const WORKS = [
 ]
 
 // --- EDITORIAL RÁCS CONFIG ---
+// --- EDITORIAL RÁCS CONFIG ---
 const EDITORIAL_CONFIGS = [
-  { gridClass: 'md:col-span-7 md:col-start-1', aspect: 'aspect-[16/11]' },
-  { gridClass: 'md:col-span-4 md:col-start-9 md:mt-36 lg:mt-48', aspect: 'aspect-[3/4]' },
-  { gridClass: 'md:col-span-5 md:col-start-1 md:-mt-18 lg:-mt-28', aspect: 'aspect-square' },
-  { gridClass: 'md:col-span-6 md:col-start-7 md:mt-24 lg:mt-32', aspect: 'aspect-[16/11]' },
-  { gridClass: 'md:col-span-6 md:col-start-1 md:-mt-8 lg:-mt-12', aspect: 'aspect-[4/5]' },
-  { gridClass: 'md:col-span-5 md:col-start-8 md:mt-20 lg:mt-28', aspect: 'aspect-square' },
+  { gridClass: 'md:col-span-7 md:col-start-1', aspect: 'md:aspect-[16/11]' },
+  { gridClass: 'md:col-span-4 md:col-start-9 md:mt-36 lg:mt-48', aspect: 'md:aspect-[3/4]' },
+  { gridClass: 'md:col-span-5 md:col-start-1 md:-mt-18 lg:-mt-28', aspect: 'md:aspect-square' },
+  { gridClass: 'md:col-span-6 md:col-start-7 md:mt-24 lg:mt-32', aspect: 'md:aspect-[16/11]' },
+  { gridClass: 'md:col-span-6 md:col-start-1 md:-mt-8 lg:-mt-12', aspect: 'md:aspect-[4/5]' },
+  { gridClass: 'md:col-span-5 md:col-start-8 md:mt-20 lg:mt-28', aspect: 'md:aspect-square' },
 ]
+
 
 function GridProjectItem({ project, config }: { project: typeof WORKS[0], config: typeof EDITORIAL_CONFIGS[0] }) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -116,15 +118,28 @@ function GridProjectItem({ project, config }: { project: typeof WORKS[0], config
         <div 
           onMouseEnter={() => setCursor({ active: true, label: 'Megnézem' })}
           onMouseLeave={clearCursor}
-          className={`relative mb-4 w-full overflow-hidden rounded-2xl bg-white/[0.02] ${config.aspect}`}
+          // Az aspect-[4/3] adja a fix téglalap méretet telefonon, a config.aspect pedig felülírja ezt gépen (pl. md:aspect-square)
+          className={`relative mb-4 w-full overflow-hidden rounded-2xl bg-white/[0.02] aspect-[4/3] ${config.aspect}`}
         >
-          <motion.div style={{ y }} className="relative -top-[20%] h-[140%] w-full will-change-transform">
+          
+          {/* MOBIL NÉZET: Nincs parallax effekt, pontosan kitölti a 4:3-as dobozt */}
+          <div className="relative h-full w-full md:hidden">
+            {isVideo ? (
+              <video src={project.image} autoPlay muted loop playsInline className="h-full w-full object-cover" />
+            ) : (
+              <Image src={project.image} alt={project.title} fill className="object-cover" />
+            )}
+          </div>
+
+          {/* ASZTALI NÉZET: Mozgó (parallax) effekt, csak gépen látszik */}
+          <motion.div style={{ y }} className="relative -top-[20%] h-[140%] w-full will-change-transform hidden md:block">
             {isVideo ? (
               <video src={project.image} autoPlay muted loop playsInline className="h-full w-full object-cover" />
             ) : (
               <Image src={project.image} alt={project.title} fill className="object-cover" />
             )}
           </motion.div>
+          
         </div>
 
         <div className="w-full px-1 flex justify-between items-center">
@@ -139,6 +154,7 @@ function GridProjectItem({ project, config }: { project: typeof WORKS[0], config
     </motion.div>
   )
 }
+
 
 export default function WorkPage() {
   const [activeFilter, setActiveFilter] = useState('ÖSSZES')
@@ -167,44 +183,7 @@ export default function WorkPage() {
   return (
     <main className="min-h-[100svh] flex flex-col bg-[#0A0A0A] font-inter text-white selection:bg-[#BF2234] selection:text-white pt-32 md:pt-48">
       
-      {/* --- LEBEGŐ KÉP A LISTA NÉZETHEZ --- */}
-      <div className="pointer-events-none fixed inset-0 z-50 overflow-hidden hidden md:block">
-        <motion.div
-          style={{ x: springX, y: springY }}
-          className="absolute top-0 left-0 -ml-[120px] -mt-[160px] w-[240px] h-[320px] flex items-center justify-center"
-        >
-          <AnimatePresence>
-            {viewMode === 'index' && hoveredIndexIdx !== null && (
-              <motion.div
-                key={hoveredIndexIdx}
-                initial={{ opacity: 0, scale: 0.8 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.8 }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="absolute inset-0 overflow-hidden rounded-[1.5rem] bg-[#111]"
-              >
-                {filteredWorks[hoveredIndexIdx].isVideo ? (
-                  <video
-                    src={filteredWorks[hoveredIndexIdx].image}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <Image
-                    src={filteredWorks[hoveredIndexIdx].image}
-                    alt={filteredWorks[hoveredIndexIdx].title}
-                    fill
-                    className="object-cover"
-                  />
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.div>
-      </div>
+      
 
       {/* --- FŐ TARTALOM --- */}
       <div className={`${CONTAINER} flex-1 flex flex-col pb-20`}>
@@ -221,18 +200,18 @@ export default function WorkPage() {
           </h1>
         </motion.div>
 
-        {/* FELSŐ VEZÉRLŐSÁV */}
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-16">
+        {/* FELSŐ VEZÉRLŐSÁV (Plusz vonal eltávolítva) */}
+        <div className="flex flex-row justify-between mb-16">
           
           {/* Bal oldal: Szűrők */}
-          <div className="flex flex-wrap items-center gap-3 md:gap-5 font-inter text-[13px] md:text-[14px] font-semibold uppercase">
+          <div className="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-5 font-inter text-[13px] md:text-[14px] font-semibold uppercase">
             {filters.map((filter) => {
               const isActive = activeFilter === filter
               return (
                 <button
                   key={filter}
                   onClick={() => setActiveFilter(filter)}
-                  className={`transition-colors duration-300 py-1 ${
+                  className={`transition-colors duration-300 py-1 text-left ${
                     isActive ? 'text-white' : 'text-[#606060] hover:text-white'
                   }`}
                 >
@@ -243,21 +222,25 @@ export default function WorkPage() {
           </div>
 
           {/* Jobb oldal: Rács / Lista váltó */}
-          <div className="flex items-center gap-3 font-inter text-[13px] md:text-[14px] font-semibold uppercase text-white">
+          <div className="flex flex-col justify-end items-end md:flex-row md:items-center gap-2 md:gap-5 font-inter text-[13px] md:text-[14px] font-semibold uppercase">
             <button 
               onClick={() => setViewMode('grid')}
-              className={`transition-colors ${viewMode === 'grid' ? 'text-white' : 'text-[#606060] hover:text-white'}`}
+              className={`transition-colors py-1 text-right ${viewMode === 'grid' ? 'text-white' : 'text-[#606060] hover:text-white'}`}
             >
               RÁCS
             </button>
             <button 
               onClick={() => setViewMode('index')}
-              className={`transition-colors ${viewMode === 'index' ? 'text-white' : 'text-[#606060] hover:text-white'}`}
+              className={`transition-colors py-1 text-right ${viewMode === 'index' ? 'text-white' : 'text-[#606060] hover:text-white'}`}
             >
               LISTA
             </button>
           </div>
         </div>
+
+
+
+
 
         {/* TARTALOM MEGJELENÍTÉSE */}
         <AnimatePresence mode="wait">
@@ -293,6 +276,7 @@ export default function WorkPage() {
               onMouseLeave={() => setHoveredIndexIdx(null)}
             >
               {filteredWorks.map((project, idx) => {
+                // isFaded = IGAZ, ha az egér a listában van, de EGY MÁSIK soron
                 const isFaded = hoveredIndexIdx !== null && hoveredIndexIdx !== idx
 
                 return (
@@ -300,40 +284,87 @@ export default function WorkPage() {
                     key={project.title}
                     href={project.link}
                     onMouseEnter={() => setHoveredIndexIdx(idx)}
-                    className="group block w-full border-b border-white/10 py-5 md:py-6"
+                    className="group relative block w-full border-b border-white/10 py-5 z-10 hover:z-50"
                   >
-                    <div className={`flex flex-col sm:flex-row items-start sm:items-center w-full transition-opacity duration-300 ${
-                      isFaded ? 'opacity-20' : 'opacity-100'
-                    }`}>
-                      
-                      {/* CÍM */}
-                      <div className="w-full sm:w-1/4 font-inter text-[13px] md:text-[14px] font-semibold uppercase text-white mb-2 sm:mb-0 text-left">
-                        {project.title}
-                      </div>
-                      
-                      {/* KATEGÓRIA */}
-                      <div className="w-full sm:w-1/4 font-inter text-[13px] md:text-[14px] font-semibold uppercase text-white mb-2 sm:mb-0 sm:text-center">
-                        {project.category}
+                    <div className="relative z-20 w-full">
+
+                      {/* === 1. MOBIL NÉZET (Csak telefonon látszik) === */}
+                      <div className={`flex md:hidden items-stretch justify-between w-full transition-opacity duration-300 ${isFaded ? 'opacity-30' : 'opacity-100'}`}>
+                        {/* Szövegek balra */}
+                        <div className="flex flex-col justify-between pr-4 w-[60%]">
+                          <div>
+                            <div className="font-inter text-[13px] font-semibold uppercase text-white mb-1">
+                              {project.title}
+                            </div>
+                            <div className="font-inter text-[13px] font-semibold uppercase text-[#606060]">
+                              {project.category}
+                            </div>
+                          </div>
+                          <div className="mt-auto pt-4 text-white">
+                            <ArrowUpRight className="h-[18px] w-[18px]" strokeWidth={2.5} />
+                          </div>
+                        </div>
+
+                        {/* Statikus kép jobbra */}
+                        <div className="relative w-[120px] shrink-0 aspect-[4/3] overflow-hidden bg-white/[0.02] rounded-md">
+                          {project.isVideo ? (
+                            <video src={project.image} autoPlay muted loop playsInline className="h-full w-full object-cover" />
+                          ) : (
+                            <Image src={project.image} alt={project.title} fill className="object-cover" />
+                          )}
+                        </div>
                       </div>
 
-                      {/* ÉV */}
-                      <div className="w-full sm:w-1/4 font-inter text-[13px] md:text-[14px] font-semibold uppercase text-white mb-2 sm:mb-0 sm:text-center">
-                        {project.year}
-                      </div>
+                      {/* === 2. ASZTALI NÉZET (Csak gépen látszik - Tökéletes 4 oszlopos Grid) === */}
+                      {/* Alapból FEHÉR (text-white). Ha isFaded igaz, akkor SZÜRKE (text-[#505050]) lesz */}
+                      <div className={`hidden md:grid grid-cols-4 items-center w-full font-inter text-[14px] font-semibold uppercase transition-colors duration-300 ${
+                        isFaded ? 'text-[#505050]' : 'text-white'
+                      }`}>
+                        
+                        {/* 1. Oszlop: CÍM */}
+                        <div className="text-left pr-4">{project.title}</div>
 
-                      {/* GOMB (Eredeti landing oldal nyíl stílus) */}
-                      <div className="w-full sm:w-1/4 font-inter text-[13px] md:text-[14px] font-semibold uppercase text-white flex items-center sm:justify-end gap-1.5">
-                        PROJEKT MEGTEKINTÉSE 
-                        <ArrowUpRight className="h-[18px] w-[18px] -mr-0.5" strokeWidth={2.5} />
+                        {/* 2. Oszlop: KATEGÓRIA */}
+                        <div className="text-left pr-4">{project.category}</div>
+
+                        {/* 3. Oszlop: ÉVSZÁM */}
+                        <div className="text-left pr-4">{project.year}</div>
+
+                        {/* 4. Oszlop: GOMB (Jobbra igazítva) */}
+                        <div className="flex items-center justify-end gap-1.5">
+                          PROJEKT MEGTEKINTÉSE 
+                          <ArrowUpRight className="h-[18px] w-[18px] -mr-0.5" strokeWidth={2.5} />
+                        </div>
+                        
                       </div>
                     </div>
+
+                    {/* === ASZTALI HOVER KÉP (Rollolós) === */}
+                    <div className="hidden md:block absolute right-[260px] xl:right-[280px] top-1/2 -translate-y-1/2 w-[220px] xl:w-[260px] aspect-[16/10] pointer-events-none transition-all duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] [clip-path:inset(0%_0%_100%_0%)] group-hover:[clip-path:inset(0%_0%_0%_0%)] rounded-lg overflow-hidden shadow-2xl z-30 bg-[#111]">
+                      {project.isVideo ? (
+                        <video src={project.image} autoPlay muted loop playsInline className="h-full w-full object-cover" />
+                      ) : (
+                        <Image src={project.image} alt={project.title} fill className="object-cover" />
+                      )}
+                    </div>
+
                   </Link>
                 )
               })}
             </motion.div>
+
+
+
+
+
+
+
           )}
 
         </AnimatePresence>
+
+    
+
 
       </div>
       

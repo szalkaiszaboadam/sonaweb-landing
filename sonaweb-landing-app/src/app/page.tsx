@@ -339,8 +339,8 @@ const PROJECTS2 = [
   { title: 'Sol Car', image: '/solcar-1.webp', link: '/work/#' },
   { title: 'GázGépKer', image: '/gazgepker-2.webp', link: '/work/#' },
   { title: 'CARL COZMO', image: '/carl-cozmo-3.webp', link: '/work/#' },
-  { title: 'placeholder2', image: '/', link: '/work/#' },
-  { title: 'placeholder3', image: '/', link: '/work/#' },
+  //{ title: 'placeholder2', image: '/', link: '/work/#' },
+  //{ title: 'placeholder3', image: '/', link: '/work/#' },
 ]
 
 const EDITORIAL_CONFIGS = [
