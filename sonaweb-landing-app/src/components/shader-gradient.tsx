@@ -9,6 +9,18 @@
 
 import { useEffect, useRef } from 'react'
 
+// A gradiens extrém lágy, ezért negyedfelbontású render is teljesen elég (a böngésző felskálázza).
+const RENDER_SCALE = 0.4
+// A mozgás nagyon lassú (t * 0.015), 30 fps-től nem látszik különbség.
+const TARGET_FPS = 30
+
+// Ha a WebGL nem elérhető / szoftveres (pl. gépterem), ez látszik helyette. A canvas CSS háttere.
+const FALLBACK_BG = [
+  'radial-gradient(60% 70% at 25% 30%, #ff0000 0%, rgba(255,0,0,0) 70%)',
+  'radial-gradient(70% 80% at 80% 70%, #d90429 0%, rgba(217,4,41,0) 70%)',
+  'radial-gradient(90% 90% at 50% 50%, #740013 0%, #0A0A0A 100%)',
+].join(',')
+
 const VERTEX_SRC = `
 attribute vec2 a_position;
 void main() {
@@ -119,9 +131,16 @@ export function ShaderGradient({ className }: { className?: string }) {
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const gl = (canvas.getContext('webgl', { antialias: true, alpha: false, premultipliedAlpha: false }) ||
-      canvas.getContext('experimental-webgl', { antialias: true, alpha: false })) as WebGLRenderingContext | null
-
+    // failIfMajorPerformanceCaveat: szoftveres (CPU-s) WebGL helyett null-t kapunk,
+    // ilyenkor a CSS fallback háttér marad, ami nem lagol.
+    const gl = canvas.getContext('webgl', {
+      antialias: false,
+      alpha: false,
+      depth: false,
+      stencil: false,
+      powerPreference: 'low-power',
+      failIfMajorPerformanceCaveat: true,
+    }) as WebGLRenderingContext | null
     if (!gl) return
 
     const vertexShader = createShader(gl, gl.VERTEX_SHADER, VERTEX_SRC)
@@ -144,20 +163,18 @@ export function ShaderGradient({ className }: { className?: string }) {
     const resolutionLoc = gl.getUniformLocation(program, 'u_resolution')
     const timeLoc = gl.getUniformLocation(program, 'u_time')
 
-    const reduceMotion = typeof window !== 'undefined' &&
-      window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-    const dpr = Math.min(window.devicePixelRatio || 1, 2)
-    let rafId = 0
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const frameInterval = 1000 / TARGET_FPS
     const start = performance.now()
+    let rafId = 0
+    let last = 0
 
-    function resize() {
-      if (!canvas || !gl) return
+    const resize = () => {
       const parent = canvas.parentElement
       const width = parent ? parent.clientWidth : window.innerWidth
       const height = parent ? parent.clientHeight : window.innerHeight
-      const w = Math.max(1, Math.floor(width * dpr))
-      const h = Math.max(1, Math.floor(height * dpr))
+      const w = Math.max(1, Math.floor(width * RENDER_SCALE))
+      const h = Math.max(1, Math.floor(height * RENDER_SCALE))
       if (canvas.width !== w || canvas.height !== h) {
         canvas.width = w
         canvas.height = h
@@ -165,23 +182,57 @@ export function ShaderGradient({ className }: { className?: string }) {
       }
     }
 
-    resize()
-    const resizeObserver = new ResizeObserver(resize)
-    if (canvas.parentElement) resizeObserver.observe(canvas.parentElement)
-
-    function render(now: number) {
-      if (!gl) return
-      const elapsed = reduceMotion ? 0 : (now - start) / 1000
-      gl.uniform2f(resolutionLoc, canvas!.width, canvas!.height)
+    const draw = (elapsed: number) => {
+      gl.uniform2f(resolutionLoc, canvas.width, canvas.height)
       gl.uniform1f(timeLoc, elapsed)
       gl.drawArrays(gl.TRIANGLES, 0, 3)
-      rafId = requestAnimationFrame(render)
     }
-    rafId = requestAnimationFrame(render)
+
+    const render = (now: number) => {
+      rafId = requestAnimationFrame(render)
+      if (now - last < frameInterval) return
+      last = now
+      draw((now - start) / 1000)
+    }
+
+    const startLoop = () => {
+      if (reduceMotion) {
+        draw(0)
+        return
+      }
+      if (!rafId) rafId = requestAnimationFrame(render)
+    }
+    const stopLoop = () => {
+      cancelAnimationFrame(rafId)
+      rafId = 0
+    }
+
+    resize()
+    draw(0)
+    const resizeObserver = new ResizeObserver(() => {
+      resize()
+      draw((performance.now() - start) / 1000)
+    })
+    if (canvas.parentElement) resizeObserver.observe(canvas.parentElement)
+
+    // Csak akkor renderelünk, ha a canvas tényleg látszik (a footer shader nem fut a hero alatt, és fordítva).
+    const intersectionObserver = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) startLoop()
+      else stopLoop()
+    })
+    intersectionObserver.observe(canvas)
+
+    const onContextLost = (e: Event) => {
+      e.preventDefault()
+      stopLoop()
+    }
+    canvas.addEventListener('webglcontextlost', onContextLost)
 
     return () => {
-      cancelAnimationFrame(rafId)
+      stopLoop()
+      intersectionObserver.disconnect()
       resizeObserver.disconnect()
+      canvas.removeEventListener('webglcontextlost', onContextLost)
       gl.deleteProgram(program)
       gl.deleteShader(vertexShader)
       gl.deleteShader(fragmentShader)
@@ -193,6 +244,7 @@ export function ShaderGradient({ className }: { className?: string }) {
     <canvas
       ref={canvasRef}
       className={className}
+      style={{ background: FALLBACK_BG }}
       aria-hidden="true"
     />
   )
