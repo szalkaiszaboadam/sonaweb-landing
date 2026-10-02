@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, useCallback, useRef, type ReactNode } from 'react'
+import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence, useMotionValue, useSpring } from 'motion/react'
 
 type CursorState = {
@@ -24,6 +25,9 @@ export function useCustomCursor() {
 }
 
 export function CustomCursorProvider({ children }: { children: ReactNode }) {
+  const pathname = usePathname()
+  const isAdmin = pathname?.startsWith('/admin')
+
   const mouseX = useMotionValue(-100)
   const mouseY = useMotionValue(-100)
   const smoothX = useSpring(mouseX, { damping: 24, stiffness: 350, mass: 0.1 })
@@ -48,8 +52,7 @@ export function CustomCursorProvider({ children }: { children: ReactNode }) {
   }, [])
 
   useEffect(() => {
-    // Ha érintőképernyős eszköz, megáll a futás (így a visible sosem lesz true)
-    if (window.matchMedia('(pointer: coarse)').matches) return
+    if (isAdmin || window.matchMedia('(pointer: coarse)').matches) return
     
     const move = (e: globalThis.MouseEvent) => {
       mouseX.set(e.clientX)
@@ -63,61 +66,80 @@ export function CustomCursorProvider({ children }: { children: ReactNode }) {
       window.removeEventListener('mousemove', move)
       window.removeEventListener('mouseleave', hide)
     }
-  }, [visible, mouseX, mouseY])
+  }, [visible, mouseX, mouseY, isAdmin])
 
   return (
     <CursorContext.Provider value={{ setCursor, clearCursor }}>
-      {children}
-      <motion.div
-        aria-hidden
-        // KIVÉVE: hidden md:block
-        className="pointer-events-none fixed left-0 top-0 z-[99999] mix-blend-difference"
-        style={{
-          x: smoothX,
-          y: smoothY,
-          translateX: '-50%',
-          translateY: '-50%',
-          opacity: visible ? 1 : 0,
-        }}
-        transition={{ opacity: { duration: 0.2 } }}
-      >
-        <motion.div
-          className="flex items-center justify-center overflow-hidden rounded-full text-center font-inter text-[14px] font-semibold uppercase leading-[14px] tracking-[-0.4px] text-[#0A0A0A]"
-          animate={{
-            width: active ? 112 : 12,
-            height: active ? 112 : 12,
-            backgroundColor: '#FFFFFF',
-          }}
-          style={{
-            willChange: 'width, height, background-color',
-          }}
-          transition={{
-            type: 'spring',
-            stiffness: 300,
-            damping: 25,
-            mass: 0.5,
-          }}
-        >
-          <AnimatePresence mode="wait">
-            {active && (
-              <motion.span
-                key={label}
-                initial={{ opacity: 0, y: 8, scale: 0.9 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -8, scale: 0.9 }}
-                transition={{
-                  type: 'spring',
-                  stiffness: 400,
-                  damping: 30,
-                }}
-                className="px-2 whitespace-nowrap font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#0A0A0A]"
-              >
-                {label}
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </motion.div>
-      </motion.div>
+      {isAdmin ? (
+        <>
+          {/* Felülírja a globális cursor: none-t és visszaállítja a natív kurzorokat */}
+          <style>{`
+            html, body, *, *::before, *::after {
+              cursor: auto !important;
+            }
+            button, a, [role="button"], select {
+              cursor: pointer !important;
+            }
+            input, textarea {
+              cursor: text !important;
+            }
+          `}</style>
+          {children}
+        </>
+      ) : (
+        <>
+          {children}
+          <motion.div
+            aria-hidden
+            className="pointer-events-none fixed left-0 top-0 z-[99999] mix-blend-difference"
+            style={{
+              x: smoothX,
+              y: smoothY,
+              translateX: '-50%',
+              translateY: '-50%',
+              opacity: visible ? 1 : 0,
+            }}
+            transition={{ opacity: { duration: 0.2 } }}
+          >
+            <motion.div
+              className="flex items-center justify-center overflow-hidden rounded-full text-center font-inter text-[14px] font-semibold uppercase leading-[14px] tracking-[-0.4px] text-[#0a0a0a]"
+              animate={{
+                width: active ? 112 : 12,
+                height: active ? 112 : 12,
+                backgroundColor: '#FFFFFF',
+              }}
+              style={{
+                willChange: 'width, height, background-color',
+              }}
+              transition={{
+                type: 'spring',
+                stiffness: 300,
+                damping: 25,
+                mass: 0.5,
+              }}
+            >
+              <AnimatePresence mode="wait">
+                {active && (
+                  <motion.span
+                    key={label}
+                    initial={{ opacity: 0, y: 8, scale: 0.9 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8, scale: 0.9 }}
+                    transition={{
+                      type: 'spring',
+                      stiffness: 400,
+                      damping: 30,
+                    }}
+                    className="px-2 whitespace-nowrap font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#0a0a0a]"
+                  >
+                    {label}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </motion.div>
+        </>
+      )}
     </CursorContext.Provider>
   )
 }

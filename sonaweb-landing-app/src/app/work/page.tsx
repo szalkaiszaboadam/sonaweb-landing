@@ -86,7 +86,6 @@ const WORKS = [
 ]
 
 // --- EDITORIAL RÁCS CONFIG ---
-// --- EDITORIAL RÁCS CONFIG ---
 const EDITORIAL_CONFIGS = [
   { gridClass: 'md:col-span-7 md:col-start-1', aspect: 'md:aspect-[16/11]' },
   { gridClass: 'md:col-span-4 md:col-start-9 md:mt-36 lg:mt-48', aspect: 'md:aspect-[3/4]' },
@@ -95,7 +94,6 @@ const EDITORIAL_CONFIGS = [
   { gridClass: 'md:col-span-6 md:col-start-1 md:-mt-8 lg:-mt-12', aspect: 'md:aspect-[4/5]' },
   { gridClass: 'md:col-span-5 md:col-start-8 md:mt-20 lg:mt-28', aspect: 'md:aspect-square' },
 ]
-
 
 function GridProjectItem({ project, config }: { project: typeof WORKS[0], config: typeof EDITORIAL_CONFIGS[0] }) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -118,7 +116,6 @@ function GridProjectItem({ project, config }: { project: typeof WORKS[0], config
         <div 
           onMouseEnter={() => setCursor({ active: true, label: 'Megnézem' })}
           onMouseLeave={clearCursor}
-          // Az aspect-[4/3] adja a fix téglalap méretet telefonon, a config.aspect pedig felülírja ezt gépen (pl. md:aspect-square)
           className={`relative mb-4 w-full overflow-hidden rounded-2xl bg-white/[0.02] aspect-[4/3] ${config.aspect}`}
         >
           
@@ -155,7 +152,6 @@ function GridProjectItem({ project, config }: { project: typeof WORKS[0], config
   )
 }
 
-
 export default function WorkPage() {
   const [activeFilter, setActiveFilter] = useState('ÖSSZES')
   const [viewMode, setViewMode] = useState<'grid' | 'index'>('index')
@@ -181,14 +177,12 @@ export default function WorkPage() {
     : WORKS.filter(w => w.category.toUpperCase() === activeFilter.toUpperCase())
 
   return (
-    <main className="min-h-[100svh] flex flex-col bg-[#0A0A0A] font-inter text-white selection:bg-[#BF2234] selection:text-white pt-32 md:pt-48">
+    <main className="min-h-[100svh] flex flex-col bg-[#0a0a0a] font-inter text-white selection:bg-[#BF2234] selection:text-white pt-32 md:pt-48">
       
-      
-
       {/* --- FŐ TARTALOM --- */}
       <div className={`${CONTAINER} flex-1 flex flex-col pb-20`}>
 
-        {/* --- KÖZÉPRE IGAZÍTOTT CÍM (Jogi oldalak stílusában) --- */}
+        {/* --- KÖZÉPRE IGAZÍTOTT CÍM --- */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -200,7 +194,7 @@ export default function WorkPage() {
           </h1>
         </motion.div>
 
-        {/* FELSŐ VEZÉRLŐSÁV (Plusz vonal eltávolítva) */}
+        {/* FELSŐ VEZÉRLŐSÁV */}
         <div className="flex flex-row justify-between mb-16">
           
           {/* Bal oldal: Szűrők */}
@@ -237,10 +231,6 @@ export default function WorkPage() {
             </button>
           </div>
         </div>
-
-
-
-
 
         {/* TARTALOM MEGJELENÍTÉSE */}
         <AnimatePresence mode="wait">
@@ -316,9 +306,9 @@ export default function WorkPage() {
                       </div>
 
                       {/* === 2. ASZTALI NÉZET (Csak gépen látszik - Tökéletes 4 oszlopos Grid) === */}
-                      {/* Alapból FEHÉR (text-white). Ha isFaded igaz, akkor SZÜRKE (text-[#505050]) lesz */}
+                      {/* Alapból FEHÉR (text-white). Ha isFaded igaz, akkor SZÜRKE (text-[#606060]) lesz */}
                       <div className={`hidden md:grid grid-cols-4 items-center w-full font-inter text-[14px] font-semibold uppercase transition-colors duration-300 ${
-                        isFaded ? 'text-[#505050]' : 'text-white'
+                        isFaded ? 'text-[#606060]' : 'text-white'
                       }`}>
                         
                         {/* 1. Oszlop: CÍM */}
@@ -340,7 +330,7 @@ export default function WorkPage() {
                     </div>
 
                     {/* === ASZTALI HOVER KÉP (Rollolós) === */}
-                    <div className="hidden md:block absolute right-[260px] xl:right-[280px] top-1/2 -translate-y-1/2 w-[220px] xl:w-[260px] aspect-[16/10] pointer-events-none transition-all duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] [clip-path:inset(0%_0%_100%_0%)] group-hover:[clip-path:inset(0%_0%_0%_0%)] rounded-lg overflow-hidden shadow-2xl z-30 bg-[#111]">
+                    <div className="hidden md:block absolute right-[260px] xl:right-[280px] top-1/2 -translate-y-1/2 w-[220px] xl:w-[260px] aspect-[16/10] pointer-events-none transition-all duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] [clip-path:inset(0%_0%_100%_0%)] group-hover:[clip-path:inset(0%_0%_0%_0%)] rounded-lg overflow-hidden shadow-2xl z-30 bg-[#0a0a0a]">
                       {project.isVideo ? (
                         <video src={project.image} autoPlay muted loop playsInline className="h-full w-full object-cover" />
                       ) : (
@@ -353,23 +343,14 @@ export default function WorkPage() {
               })}
             </motion.div>
 
-
-
-
-
-
-
           )}
 
         </AnimatePresence>
 
-    
-
-
       </div>
       
       {/* FOOTER */}
-      <div className="w-full shrink-0">
+      <div className="w-full shrink-0 bg-[#0a0a0a]">
         <Footer />
       </div>
     </main>

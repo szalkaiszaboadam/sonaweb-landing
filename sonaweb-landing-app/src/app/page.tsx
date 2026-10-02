@@ -59,7 +59,6 @@ export function WorksCarousel() {
 
   return (
     <div className="flex w-full overflow-hidden">
-      {/* A hover megállítás eltávolítva, csak az animate-marquee maradt */}
       <div className="flex w-max items-start gap-4 px-4 md:gap-6 md:px-6 animate-marquee">
         {scrollItems.map((project, i) => {
           const dim = CAROUSEL_DIMS[i % CAROUSEL_DIMS.length]
@@ -77,7 +76,7 @@ export function WorksCarousel() {
                     loop
                     playsInline
                     preload="none"
-                    poster="/carl-cozmo-2.webp" /* Vagy bármilyen generált borítókép a videóhoz */
+                    poster="/carl-cozmo-2.webp"
                     className="h-full w-full object-cover"
                   />
 
@@ -191,7 +190,7 @@ export function Services() {
   }
 
   return (
-    <section id="services" className="relative z-10 w-full bg-[#0A0A0A] py-20 md:py-28 lg:py-36 overflow-hidden" data-theme="dark">
+    <section id="services" className="relative z-10 w-full bg-[#0a0a0a] py-20 md:py-28 lg:py-36 overflow-hidden" data-theme="dark">
       <div className={CONTAINER}>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -249,7 +248,7 @@ export function Services() {
                   <span className="relative inline-flex items-center justify-center">
                     <span
                       style={{ fontSize }}
-                      className={`${SERVICES_TITLE_CLASS} block whitespace-nowrap transition-colors duration-300 ease-out ${isActive ? 'text-white' : 'text-[#5E5E5E]'
+                      className={`${SERVICES_TITLE_CLASS} block whitespace-nowrap transition-colors duration-300 ease-out ${isActive ? 'text-white' : 'text-[#606060]'
                         }`}
                     >
                       {service.title}
@@ -282,7 +281,6 @@ export function Services() {
                         {service.subServices.map((sub, idx) => (
                           <span
                             key={idx}
-                            // 15px-es méret, tiszta fehér szín, hover effektek nélkül
                             className="font-inter text-[15px] leading-[15px] tracking-[-0.4px] font-semibold uppercase text-white"
                           >
                             {sub}
@@ -306,7 +304,7 @@ export function Services() {
 
 export function AboutSection() {
   return (
-    <section id="about" className="relative z-10 w-full bg-[#0A0A0A] py-20 md:py-28 lg:py-36 overflow-hidden" data-theme="dark">
+    <section id="about" className="relative z-10 w-full bg-[#0a0a0a] py-20 md:py-28 lg:py-36 overflow-hidden" data-theme="dark">
       <div className={CONTAINER}>
         <div className="w-full text-center">
           <motion.span
@@ -323,7 +321,6 @@ export function AboutSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            // 1. break-words hozzáadva, clamp minimum levéve 1.75rem-re
             className="mx-auto w-full max-w-6xl font-display text-[clamp(1.75rem,8vw,88px)] font-extrabold uppercase leading-[1.1] tracking-[-1px] text-white md:tracking-[-3px] break-words"
           >
             Sosem csak egy weboldal. A Te márkád a mi meg&shy;szállott&shy;ságunk – minden pixelben ott vagyunk.
@@ -339,8 +336,6 @@ const PROJECTS2 = [
   { title: 'Sol Car', image: '/solcar-1.webp', link: '/work/#' },
   { title: 'GázGépKer', image: '/gazgepker-2.webp', link: '/work/#' },
   { title: 'CARL COZMO', image: '/carl-cozmo-3.webp', link: '/work/#' },
-  //{ title: 'placeholder2', image: '/', link: '/work/#' },
-  //{ title: 'placeholder3', image: '/', link: '/work/#' },
 ]
 
 const EDITORIAL_CONFIGS = [
@@ -381,7 +376,6 @@ function ProjectItem({ project, config }: { project: (typeof PROJECTS2)[0], conf
           onMouseLeave={clearCursor}
           className={`relative mb-4 w-full overflow-hidden rounded-2xl bg-white/[0.02] ${config.aspect}`}
         >
-          {/* Hozzáadtuk a disable-parallax-mobile osztályt, így nem kell a JS resize listener */}
           <motion.div 
             style={{ y }} 
             className="disable-parallax-mobile relative -top-[20%] h-[140%] w-full will-change-transform"
@@ -390,7 +384,7 @@ function ProjectItem({ project, config }: { project: (typeof PROJECTS2)[0], conf
               src={project.image} 
               alt={project.title} 
               fill 
-              sizes="(max-width: 768px) 100vw, 50vw" /* 326 KB megtakarítás a mobilokon! */
+              sizes="(max-width: 768px) 100vw, 50vw" 
               className="object-cover" 
             />
           </motion.div>
@@ -410,7 +404,7 @@ function ProjectItem({ project, config }: { project: (typeof PROJECTS2)[0], conf
 
 export function SelectedWork() {
   return (
-    <section id="work" className="relative z-10 w-full bg-[#0A0A0A] py-20 md:py-28 lg:py-36 overflow-hidden" data-theme="dark">
+    <section id="work" className="relative z-10 w-full bg-[#0a0a0a] py-20 md:py-28 lg:py-36 overflow-hidden" data-theme="dark">
       <div className={CONTAINER}>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -448,17 +442,14 @@ const CLIENTS = [
 ]
 
 export function ClientsMarquee() {
-  // A zavartalan és folyamatos görgetéshez elég kétszer duplikálni a tömböt
   const marqueeClients = [...CLIENTS, ...CLIENTS]
 
   return (
-    <div className="relative z-10 w-full bg-[#0A0A0A] pb-20 md:pb-28 lg:pb-36 flex flex-col" data-theme="dark">
+    <div className="relative z-10 w-full bg-[#0a0a0a] pb-20 md:pb-28 lg:pb-36 flex flex-col" data-theme="dark">
       <div className="relative flex w-full overflow-x-hidden">
-        {/* Szélárnyékok (Fade-out effektek a széleken) */}
-        <div className="pointer-events-none absolute left-0 top-0 bottom-0 z-10 w-24 bg-gradient-to-r from-[#0A0A0A] to-transparent md:w-48 lg:w-64" />
-        <div className="pointer-events-none absolute right-0 top-0 bottom-0 z-10 w-24 bg-gradient-to-l from-[#0A0A0A] to-transparent md:w-48 lg:w-64" />
+        <div className="pointer-events-none absolute left-0 top-0 bottom-0 z-10 w-24 bg-gradient-to-r from-[#0a0a0a] to-transparent md:w-48 lg:w-64" />
+        <div className="pointer-events-none absolute right-0 top-0 bottom-0 z-10 w-24 bg-gradient-to-l from-[#0a0a0a] to-transparent md:w-48 lg:w-64" />
 
-        {/* Folyamatos lassú görgetés, hover megállítás nélkül */}
         <div className="flex w-max shrink-0 items-center gap-16 pr-16 md:gap-24 md:pr-24 animate-marquee-slow">
           {marqueeClients.map((client, i) => (
             <div key={i} className="flex shrink-0 items-center justify-center">
@@ -482,16 +473,16 @@ export function ClientsMarquee() {
 
 export default function HomePage() {
   return (
-    <main className="bg-[#0A0A0A] font-inter text-white selection:bg-[#BF2234] selection:text-white">
+    <main className="bg-[#0a0a0a] font-inter text-white selection:bg-[#BF2234] selection:text-white">
       {/* Hero */}
 
-      <section data-theme="dark" className="relative flex min-h-[100svh] w-full flex-col items-center justify-between overflow-hidden bg-[#0A0A0A] pt-[15vh] md:pt-[20vh]">
+      <section data-theme="dark" className="relative flex min-h-[100svh] w-full flex-col items-center justify-between overflow-hidden bg-[#0a0a0a] pt-[15vh] md:pt-[20vh]">
 
         <motion.div className={`${CONTAINER} relative z-30 flex flex-1 flex-col items-center justify-center text-center -mt-12 md:-mt-20`}>
           <motion.div initial="hidden" animate="show" variants={{ hidden: {}, show: { transition: { staggerChildren: 0.15, delayChildren: 0.1 } } }} className="flex w-full flex-col items-center">
 
             <motion.div variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0, transition: { duration: 0.9, ease: [0.16, 1, 0.3, 1] } } }} className="w-full mb-8 md:mb-10 flex justify-center">
-              <div className="relative w-full h-[28vw] md:h-[18vw] overflow-hidden bg-[#0A0A0A]" style={{ WebkitMask: 'url(/sonaweb-logo-white.webp) center/contain no-repeat', mask: 'url(/sonaweb-logo-white.webp) center/contain no-repeat', transform: 'translateZ(0)', filter: 'drop-shadow(0 0 45px rgba(191,34,52,0.55)) drop-shadow(0 0 90px rgba(191,34,52,0.35))' }}>
+              <div className="relative w-full h-[28vw] md:h-[18vw] overflow-hidden bg-[#0a0a0a]" style={{ WebkitMask: 'url(/sonaweb-logo-white.webp) center/contain no-repeat', mask: 'url(/sonaweb-logo-white.webp) center/contain no-repeat', transform: 'translateZ(0)', filter: 'drop-shadow(0 0 45px rgba(191,34,52,0.55)) drop-shadow(0 0 90px rgba(191,34,52,0.35))' }}>
                 <ShaderGradient className="absolute inset-0 h-full w-full" />
               </div>
             </motion.div>
@@ -506,7 +497,7 @@ export default function HomePage() {
             <motion.div variants={{ hidden: { opacity: 0, y: 16 }, show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } } }} className="mb-12 md:mb-16">
               <Link
                 href="/contact"
-                className="group flex w-full items-center justify-center rounded-full bg-white px-5 py-3.5 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#0A0A0A] overflow-hidden sm:w-auto"
+                className="group flex w-full items-center justify-center rounded-full bg-white px-5 py-3.5 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#0a0a0a] overflow-hidden sm:w-auto"
               >
                 <span className="relative inline-flex overflow-hidden my-[-2px] py-[2px]">
                   <span className="inline-flex items-center gap-1.5 whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
@@ -536,7 +527,7 @@ export default function HomePage() {
 
 
       {/* CTA SECTION */}
-      <section className="relative z-10 w-full bg-[#0A0A0A] py-20 md:py-28 lg:py-36 overflow-hidden" data-theme="dark">
+      <section className="relative z-10 w-full bg-[#0a0a0a] py-20 md:py-28 lg:py-36 overflow-hidden" data-theme="dark">
         <div className={CONTAINER}>
           <motion.div
             initial="hidden"
@@ -553,7 +544,6 @@ export default function HomePage() {
                 hidden: { opacity: 0, y: 30 },
                 show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
               }}
-              // Itt lett nagyobb a cím mérete: clamp(3rem, 8vw, 110px)
               className="text-left font-display text-[clamp(3rem,8vw,110px)] font-extrabold uppercase leading-[1.0] tracking-[-1.5px] text-white"
             >
               Vágjunk<br />bele!
@@ -579,7 +569,7 @@ export default function HomePage() {
 
                 <Link
                   href="/contact"
-                  className="group flex w-full items-center justify-center rounded-full bg-white px-5 py-3.5 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#0A0A0A] overflow-hidden sm:w-auto"
+                  className="group flex w-full items-center justify-center rounded-full bg-white px-5 py-3.5 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#0a0a0a] overflow-hidden sm:w-auto"
                 >
                   <span className="relative inline-flex overflow-hidden my-[-2px] py-[2px]">
                     <span className="inline-flex items-center gap-1.5 whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">

@@ -1,377 +1,519 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect, type FormEvent, type ReactNode } from 'react'
 import { motion, AnimatePresence } from 'motion/react'
-import { ArrowUpRight } from 'lucide-react'
 import { Footer } from '@/components/footer'
 
-// --- ADATBÁZIS ---
+// ---------- ADATOK ----------
 const SERVICES_DATA = [
   {
     id: 'web',
     title: 'WEBFEJLESZTÉS',
-    subServices: [
-      'UX / UI DESIGN',
-      'VÁLLALATI WEBOLDAL',
-      'LANDING PAGE',
-      'WEBSHOP & E-KERESKEDELEM',
-      'EGYEDI WEBES PLATFORMOK',
-      'HOSTING & KARBANTARTÁS'
-    ]
+    heading: 'MIRE VAN SZÜKSÉGED?',
+    subServices: ['UX / UI DESIGN', 'VÁLLALATI WEBOLDAL', 'LANDING PAGE', 'WEBSHOP & E-KERESKEDELEM', 'EGYEDI WEBES PLATFORMOK', 'HOSTING & KARBANTARTÁS'],
   },
   {
     id: 'content',
     title: 'TARTALOMGYÁRTÁS',
-    subServices: [
-      'KREATÍV KONCEPCIÓ',
-      'PRECÍZIÓS SZÖVEGÍRÁS',
-      'REKLÁMFILM & FOTÓZÁS',
-      'RÖVID VIDEÓK (TIKTOK)',
-      'GRAFIKAI TERVEZÉS',
-      'ANIMÁCIÓ'
-    ]
+    heading: 'MILYEN TARTALOMRA?',
+    subServices: ['KREATÍV KONCEPCIÓ', 'PRECÍZIÓS SZÖVEGÍRÁS', 'REKLÁMFILM & FOTÓZÁS', 'RÖVID VIDEÓK (TIKTOK)', 'GRAFIKAI TERVEZÉS', 'ANIMÁCIÓ'],
   },
   {
     id: 'ads',
     title: 'HIRDETÉSKEZELÉS',
-    subServices: [
-      'META KAMPÁNYOK',
-      'GOOGLE ADS',
-      'TIKTOK ADS',
-      'RETARGETING STRATÉGIA',
-      'KONVERZIÓ OPTIMALIZÁLÁS',
-      'ANALITIKA & RIPORTÁLÁS'
-    ]
+    heading: 'HOL HIRDETNÉL?',
+    subServices: ['META KAMPÁNYOK', 'GOOGLE ADS', 'TIKTOK ADS', 'RETARGETING STRATÉGIA', 'KONVERZIÓ OPTIMALIZÁLÁS', 'ANALITIKA & RIPORTÁLÁS'],
   },
   {
     id: 'brand',
     title: 'MÁRKASTRATÉGIA',
-    subServices: [
-      'MÁRKA ARCHITEKTÚRA',
-      'POZICIONÁLÁS',
-      'BRAND IDENTITY',
-      'KOMMUNIKÁCIÓS STRATÉGIA',
-      'NAMING (NÉVADÁS)',
-      'PIACKUTATÁS'
-    ]
+    heading: 'MIN DOLGOZZUNK?',
+    subServices: ['MÁRKA ARCHITEKTÚRA', 'POZICIONÁLÁS', 'BRAND IDENTITY', 'KOMMUNIKÁCIÓS STRATÉGIA', 'NAMING (NÉVADÁS)', 'PIACKUTATÁS'],
   },
 ]
 
+const TIMELINE_OPTIONS = [
+  '1-2 HÓNAPON BELÜL',
+  '3-6 HÓNAP MÚLVA',
+  'IDÉN, DE RÁÉR',
+  'NINCS FIX DÁTUM'
+]
+
+const BUDGET_OPTIONS = [
+  '500 EZER FT ALATT',
+  '500 EZER - 1.5 MILLIÓ FT',
+  '1.5 - 3 MILLIÓ FT',
+  '3 MILLIÓ FT FELETT',
+  'MÉG KÉPLÉKENY'
+]
+
+type Flow = 'none' | 'project' | 'message' | 'team'
+type Status = 'idle' | 'sending' | 'sent' | 'error'
+type FormState = { name: string; email: string; phone: string; message: string }
+
+const EMPTY_FORM: FormState = { name: '', email: '', phone: '', message: '' }
+const EASE = [0.16, 1, 0.3, 1] as const
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+
+// ---------- STÍLUSOK ----------
+const HEADING =
+  'font-display text-[clamp(2.5rem,7vw,100px)] font-extrabold uppercase leading-[1.1] tracking-[-1px] md:tracking-[-3px] text-white text-center mb-10 md:mb-14 max-w-[1000px]'
+
+const LABEL = 'font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase'
+
+// JAVÍTÁS: Levettük az 'uppercase'-t a beírt szövegről, de a placeholder nagybetűs marad. 
+// A méretezés és a betűtípus teljesen megegyezik az eredetivel.
+const FIELD =
+  'font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold w-full bg-transparent border-b px-0 py-4 text-white placeholder:text-[#606060] placeholder:uppercase focus:outline-none transition-colors'
+
+// ---------- KISEBB KOMPONENSEK ----------
+function Roll({ children }: { children: ReactNode }) {
+  return (
+    <span className="relative inline-flex overflow-hidden my-[-2px] py-[2px]">
+      <span className="inline-flex items-center whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
+        {children}
+      </span>
+      <span
+        aria-hidden
+        className="absolute left-0 inline-flex items-center whitespace-nowrap translate-y-[150%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0"
+      >
+        {children}
+      </span>
+    </span>
+  )
+}
+
+function PrimaryButton({
+  children, onClick, type = 'button', disabled,
+}: { children: ReactNode; onClick?: () => void; type?: 'button' | 'submit'; disabled?: boolean }) {
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className={`${LABEL} group inline-flex items-center justify-center rounded-full bg-white px-6 py-3.5 text-[#0a0a0a] overflow-hidden transition-opacity duration-300 disabled:opacity-25 disabled:pointer-events-none`}
+    >
+      <Roll>{children}</Roll>
+    </button>
+  )
+}
+
+function GhostButton({ children, onClick }: { children: ReactNode; onClick: () => void }) {
+  return (
+    <button type="button" onClick={onClick} className={`${LABEL} text-[#606060] hover:text-white transition-colors px-2 py-3.5`}>
+      {children}
+    </button>
+  )
+}
+
+function Actions({ children }: { children: ReactNode }) {
+  return <div className="flex flex-col-reverse sm:flex-row items-center justify-center gap-4 sm:gap-6 mt-10">{children}</div>
+}
+
+// JAVÍTÁS: Auto-expanding textarea (automatikusan növekvő szövegmező görgetés helyett)
+function Field({
+  label, value, onChange, error, type = 'text', multiline = false, autoComplete,
+}: {
+  label: string; value: string; onChange: (v: string) => void; error?: string
+  type?: string; multiline?: boolean; autoComplete?: string
+}) {
+  const cls = `${FIELD} ${error ? 'border-[#BF2234]' : 'border-white/10 focus:border-white'}`
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  // Ez a hatás felel azért, hogy a szövegmező automatikusan növekedjen gépeléskor
+  useEffect(() => {
+    if (multiline && textareaRef.current) {
+      textareaRef.current.style.height = 'auto'
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`
+    }
+  }, [value, multiline])
+
+  return (
+    <label className="block w-full text-left">
+      <span className="sr-only">{label}</span>
+      {multiline ? (
+        <textarea
+          ref={textareaRef}
+          placeholder={label}
+          value={value}
+          onChange={e => onChange(e.target.value)}
+          rows={2}
+          className={`${cls} resize-none overflow-hidden leading-[1.6]`}
+        />
+      ) : (
+        <input
+          type={type}
+          placeholder={label}
+          value={value}
+          autoComplete={autoComplete}
+          onChange={e => onChange(e.target.value)}
+          aria-invalid={!!error}
+          className={cls}
+        />
+      )}
+      <span className={`block h-4 mt-1.5 font-inter text-[11px] tracking-[-0.2px] font-semibold uppercase text-[#BF2234] transition-opacity ${error ? 'opacity-100' : 'opacity-0'}`}>
+        {error}
+      </span>
+    </label>
+  )
+}
+
+function Option({ label, selected, onClick }: { label: string; selected: boolean; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={selected}
+      className={`${LABEL} md:text-[16px] md:leading-[16px] px-3 py-2.5 focus:outline-none focus-visible:text-white transition-colors ${
+        selected ? 'text-white' : 'text-[#606060] hover:text-white'
+      }`}
+    >
+      {label}
+    </button>
+  )
+}
+
+function OptionGrid({ children }: { children: ReactNode }) {
+  return <div className="flex flex-wrap justify-center gap-x-3 gap-y-2 md:gap-x-5 w-full max-w-3xl">{children}</div>
+}
+
+// ---------- OLDAL ----------
 export default function ContactPage() {
-  const [flow, setFlow] = useState<'none' | 'project' | 'message'>('none') 
-  
+  const [flow, setFlow] = useState<Flow>('none')
   const [step, setStep] = useState(0)
+  
   const [selectedMainIds, setSelectedMainIds] = useState<string[]>([])
   const [selectedSubServices, setSelectedSubServices] = useState<Record<string, string[]>>({})
+  const [timeline, setTimeline] = useState<string | null>(null)
+  const [budget, setBudget] = useState<string | null>(null)
+  
+  const [form, setForm] = useState<FormState>(EMPTY_FORM)
+  const [errors, setErrors] = useState<Partial<FormState>>({})
+  const [status, setStatus] = useState<Status>('idle')
 
-  const toggleMainService = (id: string) => {
-    setSelectedMainIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id])
-  }
+  const scrollTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
-  const toggleSubService = (mainId: string, subName: string) => {
-    setSelectedSubServices(prev => {
-      const current = prev[mainId] || []
-      const updated = current.includes(subName) ? current.filter(n => n !== subName) : [...current, subName]
-      return { ...prev, [mainId]: updated }
+  const toggleMain = (id: string) =>
+    setSelectedMainIds(prev => {
+      const next = prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]
+      return SERVICES_DATA.map(s => s.id).filter(i => next.includes(i))
     })
+
+  const toggleSub = (mainId: string, sub: string) =>
+    setSelectedSubServices(prev => {
+      const cur = prev[mainId] || []
+      return { ...prev, [mainId]: cur.includes(sub) ? cur.filter(n => n !== sub) : [...cur, sub] }
+    })
+
+  const setField = (key: keyof FormState) => (value: string) => {
+    setForm(prev => ({ ...prev, [key]: value }))
+    if (errors[key]) setErrors(prev => ({ ...prev, [key]: undefined }))
   }
 
-  const handleNext = () => {
+  const reset = () => {
+    setFlow('none')
+    setStep(0)
+    setSelectedMainIds([])
+    setSelectedSubServices({})
+    setTimeline(null)
+    setBudget(null)
+    setForm(EMPTY_FORM)
+    setErrors({})
+    setStatus('idle')
+  }
+
+  const goNext = () => {
     if (step === 0 && selectedMainIds.length === 0) return
-    setStep(prev => prev + 1)
+    setStep(s => s + 1)
+    scrollTop()
   }
 
-  const handleBack = () => {
-    if (step === 0) {
-      setFlow('none')
-      setSelectedMainIds([])
-      setSelectedSubServices({})
-    } else {
-      setStep(prev => Math.max(0, prev - 1))
+  const goBack = () => {
+    if (step === 0) reset()
+    else setStep(s => Math.max(0, s - 1))
+    scrollTop()
+  }
+
+  const validate = () => {
+    const e: Partial<FormState> = {}
+    if (form.name.trim().length < 2) e.name = 'KÉRLEK ADD MEG A NEVED'
+    if (!EMAIL_RE.test(form.email.trim())) e.email = 'ÉRVÉNYES E-MAIL CÍM KELL'
+    if (flow !== 'project' && form.message.trim().length < 5) e.message = 'ÍRJ LEGALÁBB PÁR SZÓT'
+    setErrors(e)
+    return Object.keys(e).length === 0
+  }
+
+  const handleSubmit = async (ev: FormEvent) => {
+    ev.preventDefault()
+    if (status === 'sending' || !validate()) return
+    setStatus('sending')
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: flow,
+          ...form,
+          timeline,
+          budget,
+          services: flow === 'project'
+            ? selectedMainIds.map(id => ({
+                category: SERVICES_DATA.find(s => s.id === id)?.title,
+                items: selectedSubServices[id] || [],
+              }))
+            : undefined,
+        }),
+      })
+      if (!res.ok) throw new Error('send failed')
+      setStatus('sent')
+      scrollTop()
+    } catch {
+      setStatus('error')
     }
   }
 
-  const totalSteps = selectedMainIds.length + 1
-  const progressPercentage = flow === 'project' ? (selectedMainIds.length === 0 ? 0 : (step / totalSteps) * 100) : 0
-
-  const currentMainServiceId = step > 0 && step <= selectedMainIds.length ? selectedMainIds[step - 1] : null
-  const currentCategory = currentMainServiceId ? SERVICES_DATA.find(s => s.id === currentMainServiceId) : null
-  const isFinalStep = step > selectedMainIds.length
-
-  // === STÍLUSOK ===
-  const HEADING_STYLE = "font-display text-[clamp(3rem,8vw,110px)] font-extrabold uppercase leading-[1.0] tracking-[-1.5px] md:tracking-[-3px] text-white text-center mb-10 md:mb-14 max-w-[1400px]"
-  const SUBTITLE_STYLE = "font-inter text-[13px] md:text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#606060] text-center mb-6 block"
+  const totalSteps = selectedMainIds.length + 4
+  const progress = flow === 'project' ? ((step + 1) / totalSteps) * 100 : 0
   
-  const PRIMARY_BTN_CLASS = "group flex w-full sm:w-auto items-center justify-center rounded-full bg-white px-5 py-3.5 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#0A0A0A] overflow-hidden"
-  const SECONDARY_BTN_CLASS = "group flex w-full sm:w-auto items-center justify-center rounded-full bg-transparent border border-[#333] hover:border-white px-5 py-3.5 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-white transition-colors duration-300"
+  const isTimelineStep = step === selectedMainIds.length + 1
+  const isBudgetStep = step === selectedMainIds.length + 2
+  const isFinalStep = step === selectedMainIds.length + 3
   
-  // Opciók: Sima letisztult tipográfia dobozok és zárójelek nélkül
-  const OPTION_CLASS = (isSelected: boolean) => 
-    `font-inter text-[16px] md:text-[20px] leading-[1.2] tracking-[-0.5px] font-semibold uppercase transition-colors focus:outline-none ${
-      isSelected ? 'text-white' : 'text-[#555] hover:text-[#999]'
-    }`
+  const currentCategory =
+    step > 0 && step <= selectedMainIds.length ? SERVICES_DATA.find(s => s.id === selectedMainIds[step - 1]) : undefined
+
+  const viewKey =
+    status === 'sent' ? 'sent'
+    : flow === 'none' ? 'none'
+    : flow === 'message' ? 'message'
+    : flow === 'team' ? 'team'
+    : isFinalStep ? 'final'
+    : isBudgetStep ? 'budget'
+    : isTimelineStep ? 'timeline'
+    : `step-${step}`
+
+  const contactFields = () => (
+    <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-1 w-full max-w-2xl mt-10">
+      <Field label="NEVED" value={form.name} onChange={setField('name')} error={errors.name} autoComplete="name" />
+      <Field label="E-MAIL CÍMED" type="email" value={form.email} onChange={setField('email')} error={errors.email} autoComplete="email" />
+      <Field label="TELEFONSZÁM (NEM KÖTELEZŐ)" type="tel" value={form.phone} onChange={setField('phone')} autoComplete="tel" />
+      <Field
+        label={flow === 'team' ? 'MESÉLJ MAGADRÓL ÉS ARRÓL, MIBEN VAGY JÓ' : flow === 'message' ? 'MIBEN SEGÍTHETÜNK?' : 'PÁR SZÓ A PROJEKTRŐL (NEM KÖTELEZŐ)'}
+        multiline
+        value={form.message}
+        onChange={setField('message')}
+        error={errors.message}
+      />
+      {status === 'error' && (
+        <p role="alert" className="font-inter text-[12px] tracking-[-0.2px] font-semibold uppercase text-[#BF2234] text-center mt-2">
+          NEM SIKERÜLT ELKÜLDENI. PRÓBÁLD ÚJRA KICSIT KÉSŐBB.
+        </p>
+      )}
+      <Actions>
+        <GhostButton onClick={flow === 'project' ? goBack : reset}>VISSZA</GhostButton>
+        <PrimaryButton type="submit" disabled={status === 'sending'}>
+          {status === 'sending' ? 'KÜLDÖM...' : 'ELKÜLDÖM'}
+        </PrimaryButton>
+      </Actions>
+    </form>
+  )
 
   return (
-    <div className="w-full flex flex-col bg-[#0A0A0A] text-white font-inter selection:bg-[#BF2234]">
+    <div className="w-full flex flex-col bg-[#0a0a0a] text-white font-inter selection:bg-[#BF2234]">
       
       {/* VÉKONY PIROS PROGRESS BAR */}
-      <div className="fixed top-0 left-0 w-full h-[2px] bg-transparent z-50">
-        <motion.div 
-          className="h-full bg-[#BF2234]"
-          initial={{ width: 0 }}
-          animate={{ width: `${progressPercentage}%` }}
-          transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-        />
-      </div>
+      {flow === 'project' && status !== 'sent' && (
+        <div className="fixed top-0 left-0 w-full h-1 bg-transparent z-50">
+          <motion.div
+            className="h-full bg-[#BF2234]"
+            initial={{ width: 0 }}
+            animate={{ width: `${progress}%` }}
+            transition={{ duration: 0.4, ease: EASE }}
+          />
+        </div>
+      )}
 
       <div className="min-h-[100svh] w-full flex flex-col relative">
         <div className="h-28 md:h-36 w-full shrink-0" />
 
         <main className="flex-1 flex flex-col justify-center items-center px-6 md:px-12 w-full max-w-[1600px] mx-auto pb-20">
           <AnimatePresence mode="wait">
-            
-            {/* ========================================== */}
-            {/* 0. LÉPÉS: KEZDŐKÉPERNYŐ                   */}
-            {/* ========================================== */}
-            {flow === 'none' && (
-              <motion.div
-                key="flow-none"
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full flex flex-col items-center justify-center"
-              >
-                <h1 className={HEADING_STYLE}>
-                  VÁGJUNK BELE.
-                </h1>
-
-                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 mt-4 w-full sm:w-auto">
-                  <button onClick={() => setFlow('project')} className={PRIMARY_BTN_CLASS}>
-                    <span className="relative inline-flex overflow-hidden my-[-2px] py-[2px]">
-                      <span className="inline-flex items-center gap-1.5 whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
-                        PROJEKT INDÍTÁSA <ArrowUpRight className="h-[18px] w-[18px] -mr-0.5" strokeWidth={2.5} />
-                      </span>
-                      <span className="absolute left-0 inline-flex items-center gap-1.5 whitespace-nowrap translate-y-[150%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-                        PROJEKT INDÍTÁSA <ArrowUpRight className="h-[18px] w-[18px] -mr-0.5" strokeWidth={2.5} />
-                      </span>
-                    </span>
-                  </button>
-
-                  <button onClick={() => setFlow('message')} className={SECONDARY_BTN_CLASS}>
-                    SIMA ÜZENET
-                  </button>
-                </div>
-              </motion.div>
-            )}
-
-            {/* ========================================== */}
-            {/* A) SIMA ÜZENET NÉZET                       */}
-            {/* ========================================== */}
-            {flow === 'message' && (
-              <motion.div
-                key="flow-message"
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full flex flex-col items-center justify-center"
-              >
-                <h1 className={HEADING_STYLE}>
-                  ÍRJ NEKÜNK.
-                </h1>
-
-                <form className="flex flex-col gap-6 w-full max-w-2xl mt-4">
-                  <input type="text" placeholder="TELJES NÉV" className="w-full bg-transparent border-b border-[#333] px-0 py-4 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-white placeholder:text-[#555] focus:outline-none focus:border-white transition-colors" />
-                  <input type="email" placeholder="E-MAIL CÍM" className="w-full bg-transparent border-b border-[#333] px-0 py-4 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-white placeholder:text-[#555] focus:outline-none focus:border-white transition-colors" />
-                  <input type="tel" placeholder="TELEFONSZÁM" className="w-full bg-transparent border-b border-[#333] px-0 py-4 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-white placeholder:text-[#555] focus:outline-none focus:border-white transition-colors" />
-                  <textarea placeholder="ÜZENETED..." className="w-full bg-transparent border-b border-[#333] px-0 py-4 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-white placeholder:text-[#555] focus:outline-none focus:border-white transition-colors resize-none h-28" />
-                  
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-8 w-full sm:w-auto">
-                    <button type="button" onClick={() => setFlow('none')} className="text-[#606060] hover:text-white font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase transition-colors px-2 py-3.5">
-                      VISSZA
-                    </button>
-                    <button type="button" className={PRIMARY_BTN_CLASS}>
-                      <span className="relative inline-flex overflow-hidden my-[-2px] py-[2px]">
-                        <span className="inline-flex items-center gap-1.5 whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
-                          KÜLDÉS <ArrowUpRight className="h-[18px] w-[18px] -mr-0.5" strokeWidth={2.5} />
-                        </span>
-                        <span className="absolute left-0 inline-flex items-center gap-1.5 whitespace-nowrap translate-y-[150%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-                          KÜLDÉS <ArrowUpRight className="h-[18px] w-[18px] -mr-0.5" strokeWidth={2.5} />
-                        </span>
-                      </span>
-                    </button>
+            <motion.div
+              key={viewKey}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.4, ease: EASE }}
+              className="w-full flex flex-col items-center justify-center text-center"
+            >
+              {/* KEZDŐ */}
+              {viewKey === 'none' && (
+                <>
+                  <h1 className={HEADING}>MIVEL KEZDJÜK?</h1>
+                  <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-6">
+                    <PrimaryButton onClick={() => setFlow('project')}>ÚJ PROJEKT</PrimaryButton>
+                    <PrimaryButton onClick={() => setFlow('message')}>KÉRDÉSEM VAN</PrimaryButton>
+                    <PrimaryButton onClick={() => setFlow('team')}>CSAPATBA JELENTKEZEM</PrimaryButton>
                   </div>
-                </form>
-              </motion.div>
-            )}
+                </>
+              )}
 
-            {/* ========================================== */}
-            {/* B) PROJEKT KÉRDŐÍV LÉPÉSEI                 */}
-            {/* ========================================== */}
-            
-            {/* 1. LÉPÉS */}
-            {flow === 'project' && step === 0 && (
-              <motion.div
-                key="step-0"
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full flex flex-col items-center justify-center"
-              >
-                <h1 className={HEADING_STYLE}>
-                  MILYEN PROJEKTEN DOLGOZUNK?
-                </h1>
+              {/* SIMA ÜZENET */}
+              {(viewKey === 'message' || viewKey === 'team') && (
+                <>
+                  <h1 className={HEADING}>{viewKey === 'team' ? 'LEGYÉL A CSAPAT RÉSZE' : 'MESÉLJ NEKÜNK'}</h1>
+                  {contactFields()}
+                </>
+              )}
 
-                {/* Minimalista Tipográfia Opciók */}
-                <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 md:gap-x-12 md:gap-y-6 w-full max-w-4xl mb-12">
-                  {SERVICES_DATA.map(service => {
-                    const isSelected = selectedMainIds.includes(service.id)
-                    return (
-                      <button
-                        key={service.id}
-                        onClick={() => toggleMainService(service.id)}
-                        className={OPTION_CLASS(isSelected)}
-                      >
-                        {service.title}{isSelected && <span className="text-[#BF2234]">.</span>}
-                      </button>
-                    )
-                  })}
-                </div>
+              {/* 1. LÉPÉS: FŐSZOLGÁLTATÁSOK */}
+              {viewKey === 'step-0' && (
+                <>
+                  <h1 className={HEADING}>MI LENNE A PROJEKT?</h1>
+                  <OptionGrid>
+                    {SERVICES_DATA.map(s => (
+                      <Option key={s.id} label={s.title} selected={selectedMainIds.includes(s.id)} onClick={() => toggleMain(s.id)} />
+                    ))}
+                  </OptionGrid>
+                  <Actions>
+                    <GhostButton onClick={goBack}>VISSZA</GhostButton>
+                    <PrimaryButton onClick={goNext} disabled={selectedMainIds.length === 0}>KÖVETKEZŐ</PrimaryButton>
+                  </Actions>
+                </>
+              )}
 
-                <div className="flex flex-col sm:flex-row items-center gap-6 h-12 w-full sm:w-auto mt-4">
-                  <button onClick={handleBack} className="text-[#606060] hover:text-white font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase transition-colors px-2 py-3.5">
-                    VISSZA
-                  </button>
-                  
-                  <AnimatePresence>
-                    {selectedMainIds.length > 0 && (
-                      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}>
-                        <button onClick={handleNext} className={PRIMARY_BTN_CLASS}>
-                          <span className="relative inline-flex overflow-hidden my-[-2px] py-[2px]">
-                            <span className="inline-flex items-center gap-1.5 whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
-                              TOVÁBB <ArrowUpRight className="h-[18px] w-[18px] -mr-0.5" strokeWidth={2.5} />
-                            </span>
-                            <span className="absolute left-0 inline-flex items-center gap-1.5 whitespace-nowrap translate-y-[150%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-                              TOVÁBB <ArrowUpRight className="h-[18px] w-[18px] -mr-0.5" strokeWidth={2.5} />
-                            </span>
-                          </span>
-                        </button>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </motion.div>
-            )}
-
-            {/* 2...N LÉPÉS */}
-            {flow === 'project' && step > 0 && !isFinalStep && currentCategory && (
-              <motion.div
-                key={`step-${step}`}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full flex flex-col items-center justify-center"
-              >
-                <span className={SUBTITLE_STYLE}>
-                  {currentCategory.title}
-                </span>
-                
-                <h1 className={HEADING_STYLE}>
-                  MIRE VAN SZÜKSÉG PONTOSAN?
-                </h1>
-
-                <div className="flex flex-wrap justify-center gap-x-8 gap-y-4 md:gap-x-12 md:gap-y-6 w-full max-w-4xl mb-12">
-                  {currentCategory.subServices.map(sub => {
-                    const isSelected = (selectedSubServices[currentCategory.id] || []).includes(sub)
-                    return (
-                      <button
+              {/* 2...N LÉPÉS: ALSZOLGÁLTATÁSOK */}
+              {currentCategory && (
+                <>
+                  <h1 className={HEADING}>{currentCategory.heading}</h1>
+                  <OptionGrid>
+                    {currentCategory.subServices.map(sub => (
+                      <Option
                         key={sub}
-                        onClick={() => toggleSubService(currentCategory.id, sub)}
-                        className={OPTION_CLASS(isSelected)}
-                      >
-                         {sub}{isSelected && <span className="text-[#BF2234]">.</span>}
-                      </button>
-                    )
-                  })}
-                </div>
+                        label={sub}
+                        selected={(selectedSubServices[currentCategory.id] || []).includes(sub)}
+                        onClick={() => toggleSub(currentCategory.id, sub)}
+                      />
+                    ))}
+                  </OptionGrid>
+                  <Actions>
+                    <GhostButton onClick={goBack}>VISSZA</GhostButton>
+                    <PrimaryButton onClick={goNext}>KÖVETKEZŐ</PrimaryButton>
+                  </Actions>
+                </>
+              )}
 
-                <div className="flex flex-col sm:flex-row items-center gap-6 w-full sm:w-auto mt-4">
-                  <button onClick={handleBack} className="text-[#606060] hover:text-white font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase transition-colors px-2 py-3.5">
-                    VISSZA
-                  </button>
-                  <button onClick={handleNext} className={PRIMARY_BTN_CLASS}>
-                      <span className="relative inline-flex overflow-hidden my-[-2px] py-[2px]">
-                        <span className="inline-flex items-center gap-1.5 whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
-                          {step === selectedMainIds.length ? 'ÖSSZEGZÉS' : 'TOVÁBB'} <ArrowUpRight className="h-[18px] w-[18px] -mr-0.5" strokeWidth={2.5} />
-                        </span>
-                        <span className="absolute left-0 inline-flex items-center gap-1.5 whitespace-nowrap translate-y-[150%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-                           {step === selectedMainIds.length ? 'ÖSSZEGZÉS' : 'TOVÁBB'} <ArrowUpRight className="h-[18px] w-[18px] -mr-0.5" strokeWidth={2.5} />
-                        </span>
-                      </span>
-                  </button>
-                </div>
-              </motion.div>
-            )}
+              {/* IDŐZÍTÉS (TIMELINE) */}
+              {viewKey === 'timeline' && (
+                <>
+                  <h1 className={HEADING}>MIKORRA LEGYEN KÉSZ?</h1>
+                  <OptionGrid>
+                    {TIMELINE_OPTIONS.map(opt => (
+                      <Option
+                        key={opt}
+                        label={opt}
+                        selected={timeline === opt}
+                        onClick={() => setTimeline(opt)}
+                      />
+                    ))}
+                  </OptionGrid>
+                  <Actions>
+                    <GhostButton onClick={goBack}>VISSZA</GhostButton>
+                    <PrimaryButton onClick={goNext} disabled={!timeline}>KÖVETKEZŐ</PrimaryButton>
+                  </Actions>
+                </>
+              )}
 
-            {/* VÉGSŐ LÉPÉS */}
-            {flow === 'project' && isFinalStep && (
-              <motion.div
-                key="final-step"
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full flex flex-col items-center text-center max-w-4xl mx-auto"
-              >
-                <h1 className={HEADING_STYLE}>
-                  ADD MEG AZ ADATAIDAT.
-                </h1>
+              {/* BÜDZSÉ (BUDGET) */}
+              {viewKey === 'budget' && (
+                <>
+                  <h1 className={HEADING}>MILYEN KERETTEL SZÁMOLJUNK?</h1>
+                  <OptionGrid>
+                    {BUDGET_OPTIONS.map(opt => (
+                      <Option
+                        key={opt}
+                        label={opt}
+                        selected={budget === opt}
+                        onClick={() => setBudget(opt)}
+                      />
+                    ))}
+                  </OptionGrid>
+                  <Actions>
+                    <GhostButton onClick={goBack}>VISSZA</GhostButton>
+                    <PrimaryButton onClick={goNext} disabled={!budget}>ÁTNÉZEM</PrimaryButton>
+                  </Actions>
+                </>
+              )}
 
-                {/* Kiválasztott elemek listája (Nincs pipa, csak szöveg) */}
-                <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mb-12 text-[#606060]">
-                  {selectedMainIds.map(mainId => {
-                    const category = SERVICES_DATA.find(s => s.id === mainId)
-                    if (!category) return null
-                    return (
-                      <span key={mainId} className="font-inter text-[13px] md:text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase">
-                        {category.title}
-                      </span>
-                    )
-                  })}
-                </div>
-                
-                {/* Űrlap */}
-                <form className="flex flex-col gap-6 w-full max-w-2xl">
-                  <input type="text" placeholder="TELJES NÉV" className="w-full bg-transparent border-b border-[#333] px-0 py-4 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-white placeholder:text-[#555] focus:outline-none focus:border-white transition-colors" />
-                  <input type="email" placeholder="E-MAIL CÍM" className="w-full bg-transparent border-b border-[#333] px-0 py-4 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-white placeholder:text-[#555] focus:outline-none focus:border-white transition-colors" />
-                  <input type="tel" placeholder="TELEFONSZÁM" className="w-full bg-transparent border-b border-[#333] px-0 py-4 font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-white placeholder:text-[#555] focus:outline-none focus:border-white transition-colors" />
+              {/* VÉGSŐ LÉPÉS */}
+              {viewKey === 'final' && (
+                <>
+                  <h1 className={HEADING}>HOGYAN ÉRÜNK EL?</h1>
+
+                  <div className="w-full max-w-2xl flex flex-col border-t border-white/10 mb-10">
+                    {/* Alszolgáltatások kilistázása */}
+                    {selectedMainIds.map((mainId) => {
+                      const category = SERVICES_DATA.find(s => s.id === mainId)
+                      if (!category) return null
+                      const subs = selectedSubServices[mainId] || []
+                      return (
+                        <div
+                          key={mainId}
+                          className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-4 sm:py-5 border-b border-white/10 gap-2 sm:gap-6 text-left"
+                        >
+                          <span className="font-inter text-[13px] md:text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#606060] shrink-0">
+                            {category.title}
+                          </span>
+                          <span className="font-inter text-[13px] md:text-[14px] leading-[1.4] tracking-[-0.4px] font-semibold uppercase text-white sm:text-right">
+                            {subs.length > 0 ? subs.join(', ') : 'MÉG NYITOTT'}
+                          </span>
+                        </div>
+                      )
+                    })}
                     
-                  <div className="flex flex-col sm:flex-row items-center justify-center gap-6 mt-8 w-full sm:w-auto">
-                    <button type="button" onClick={handleBack} className="text-[#606060] hover:text-white font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase transition-colors px-2 py-3.5">
-                      VISSZA
-                    </button>
-                    <button type="button" className={PRIMARY_BTN_CLASS}>
-                      <span className="relative inline-flex overflow-hidden my-[-2px] py-[2px]">
-                        <span className="inline-flex items-center gap-1.5 whitespace-nowrap transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:-translate-y-[150%]">
-                          ÁRAJÁNLAT KÉRÉSE <ArrowUpRight className="h-[18px] w-[18px] -mr-0.5" strokeWidth={2.5} />
-                        </span>
-                        <span className="absolute left-0 inline-flex items-center gap-1.5 whitespace-nowrap translate-y-[150%] transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-y-0">
-                          ÁRAJÁNLAT KÉRÉSE <ArrowUpRight className="h-[18px] w-[18px] -mr-0.5" strokeWidth={2.5} />
-                        </span>
+                    {/* Időzítés kilistázása */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-4 sm:py-5 border-b border-white/10 gap-2 sm:gap-6 text-left">
+                      <span className="font-inter text-[13px] md:text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#606060] shrink-0">
+                        IDŐZÍTÉS
                       </span>
-                    </button>
-                  </div>
-                </form>
-              </motion.div>
-            )}
+                      <span className="font-inter text-[13px] md:text-[14px] leading-[1.4] tracking-[-0.4px] font-semibold uppercase text-white sm:text-right">
+                        {timeline || 'NEM MEGADOTT'}
+                      </span>
+                    </div>
 
+                    {/* Büdzsé kilistázása */}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between py-4 sm:py-5 border-b border-white/10 gap-2 sm:gap-6 text-left">
+                      <span className="font-inter text-[13px] md:text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#606060] shrink-0">
+                        KÖLTSÉGKERET
+                      </span>
+                      <span className="font-inter text-[13px] md:text-[14px] leading-[1.4] tracking-[-0.4px] font-semibold uppercase text-white sm:text-right">
+                        {budget || 'NEM MEGADOTT'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {contactFields()}
+                </>
+              )}
+
+                            {/* SIKER */}
+              {viewKey === 'sent' && (
+                <>
+                  <h1 className={HEADING}>MEGKAPTUK!</h1>
+                  {/* ITT LETT ÁTÍRVA A SZÍN TEXT-WHITE-RA */}
+                  <p className="font-inter text-[14px] md:text-[16px] leading-[1.5] tracking-[-0.4px] font-semibold uppercase text-white max-w-md mb-10">
+                    ÁTNÉZZÜK, ÉS HAMAROSAN JELENTKEZÜNK.
+                  </p>
+                  <PrimaryButton onClick={reset}>VISSZA AZ ELEJÉRE</PrimaryButton>
+                </>
+              )}
+
+            </motion.div>
           </AnimatePresence>
         </main>
       </div>
 
-      <div className="w-full shrink-0 bg-[#0A0A0A]">
+      <div className="w-full shrink-0 bg-[#0a0a0a]">
         <Footer />
       </div>
     </div>
