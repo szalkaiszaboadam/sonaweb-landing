@@ -546,7 +546,7 @@ export default function HomePage() {
               }}
               className="text-left font-display text-[clamp(1.75rem,8vw,88px)] font-extrabold uppercase leading-[1] tracking-[-3px] text-white"
             >
-              Csináljunk valami<br />igazán ütőst
+              Minden<br />itt keződik
             </motion.h2>
 
             <div className="flex max-w-[360px] flex-col items-start gap-6 md:items-end md:text-right">
