@@ -4,62 +4,57 @@ import { adminDb } from '@/lib/firebase-admin'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-// --- HTML E-MAIL SABLON GENERÁTOR (Kliensnek) ---
-function generateUserEmailHtml(name: string, contentHtml: string) {
-  // Cseréld ki a domain-t a sajátodra! Fontos: e-mailben a .png formátum a legbiztosabb!
+// --- HTML E-MAIL SABLON GENERÁTOR (Közös keret) ---
+function generateEmailWrapper(contentHtml: string) {
+  // Cseréld ki a domain-t a sajátodra!
   const logoUrl = 'https://sonaweb.hu/sonaweb-logo-white.png' 
 
   return `
   <!DOCTYPE html>
-  <html>
+  <html lang="hu">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
-  <body style="margin: 0; padding: 40px 20px; background-color: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #ffffff; -webkit-font-smoothing: antialiased;">
-    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto; background-color: #111111; border: 1px solid #222222; border-radius: 12px; overflow: hidden;">
-      <!-- Header / Logo -->
+  <body style="margin: 0; padding: 0; background-color: #0a0a0a; font-family: 'Inter', -apple-system, BlinkMacSystemFont, Arial, sans-serif; -webkit-font-smoothing: antialiased;">
+    <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #0a0a0a; width: 100%; height: 100%;">
       <tr>
-        <td style="padding: 40px 40px 30px 40px; text-align: center; border-bottom: 1px solid #1a1a1a;">
-          <img src="${logoUrl}" alt="SONAWEB" width="160" style="display: block; margin: 0 auto; outline: none; text-decoration: none;" />
-        </td>
-      </tr>
-      <!-- Body -->
-      <tr>
-        <td style="padding: 40px; line-height: 1.6; font-size: 16px; color: #e5e5e5;">
-          <h2 style="margin: 0 0 24px 0; font-size: 20px; font-weight: 600; color: #ffffff;">Szia ${name}!</h2>
-          ${contentHtml}
-          <p style="margin: 32px 0 0 0; font-size: 15px; color: #a3a3a3;">
-            Üdvözlettel,<br>
-            <strong style="color: #ffffff;">A Sonaweb csapata</strong>
-          </p>
-        </td>
-      </tr>
-      <!-- Footer -->
-      <tr>
-        <td style="padding: 24px 40px; background-color: #0a0a0a; text-align: center; font-size: 12px; color: #666666; border-top: 1px solid #222222;">
-          © ${new Date().getFullYear()} Sonaweb. Minden jog fenntartva.<br>
-          <a href="https://sonaweb.hu" style="color: #666666; text-decoration: underline;">sonaweb.hu</a>
+        <td align="center" style="padding: 60px 20px;">
+          <!-- Középső konténer -->
+          <table width="100%" border="0" cellspacing="0" cellpadding="0" style="max-width: 560px; margin: 0 auto;">
+            
+            <!-- Fejléc / Logó -->
+            <tr>
+              <td style="padding-bottom: 50px; text-align: left;">
+                <img src="${logoUrl}" alt="SONAWEB" width="160" style="display: block; border: none; outline: none; text-decoration: none;" />
+              </td>
+            </tr>
+            
+            <!-- Tartalom -->
+            <tr>
+              <td style="text-align: left;">
+                ${contentHtml}
+              </td>
+            </tr>
+
+            <!-- Lábléc -->
+            <tr>
+              <td style="padding-top: 60px; text-align: left; border-top: 1px solid #1a1a1a;">
+                <p style="margin: 0; font-size: 13px; font-weight: 600; color: #606060; text-transform: uppercase; letter-spacing: -0.4px;">
+                  © ${new Date().getFullYear()} SONAWEB. Minden jog fenntartva.
+                </p>
+                <p style="margin: 10px 0 0 0;">
+                  <a href="https://sonaweb.hu" style="font-size: 13px; color: #a3a3a3; text-decoration: none;">sonaweb.hu</a>
+                </p>
+              </td>
+            </tr>
+
+          </table>
         </td>
       </tr>
     </table>
   </body>
   </html>
-  `
-}
-
-// --- HTML E-MAIL SABLON GENERÁTOR (Adminnak) ---
-function generateAdminEmailHtml(title: string, detailsHtml: string, leadId: string) {
-  return `
-  <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f9fafb; border-radius: 8px; color: #111827;">
-    <h2 style="color: #111827; margin-top: 0;">${title}</h2>
-    <div style="background-color: #ffffff; padding: 24px; border-radius: 6px; border: 1px solid #e5e7eb;">
-      ${detailsHtml}
-    </div>
-    <p style="font-size: 12px; color: #6b7280; margin-top: 20px;">
-      Rendszer azonosító: <code>${leadId}</code>
-    </p>
-  </div>
   `
 }
 
@@ -89,59 +84,98 @@ export async function POST(req: Request) {
       createdAt,
     })
 
-    // Sima szöveges és HTML formázások előkészítése
+    // Témák és tartalom előkészítése
     let userSubject = ''
-    let userMessageBody = '' // Fallback text (ha a kliens nem tölt be HTML-t)
-    let userHtmlBody = ''    // A szép design
+    let userMessageBody = ''
+    let userHtmlContent = ''
+
+    // -- STÍLUS VÁLTOZÓK A LANDING OLDAL ALAPJÁN --
+    const labelStyle = "margin: 0 0 10px 0; font-size: 13px; font-weight: 600; color: #606060; text-transform: uppercase; letter-spacing: -0.4px;"
+    const h1Style = "margin: 0 0 24px 0; font-size: 32px; font-weight: 800; color: #ffffff; text-transform: uppercase; letter-spacing: -1px; line-height: 1.1;"
+    const pStyle = "margin: 0 0 32px 0; font-size: 16px; color: #d1d5db; line-height: 1.6; font-weight: 400;"
+    const boxStyle = "background-color: #141414; border: 1px solid #1f1f1f; border-radius: 16px; padding: 24px; margin-bottom: 32px;"
+    const buttonStyle = "display: inline-block; background-color: #ffffff; color: #0a0a0a; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: -0.4px; text-decoration: none; padding: 14px 28px; border-radius: 50px;"
 
     if (flowType === 'team') {
-      userSubject = `Jelentkezésed rögzítettük — ${name}`
+      userSubject = `Jelentkezés rögzítve — ${name}`
       userMessageBody = `Szia ${name}!\n\nKöszönjük a jelentkezésedet a Sonaweb csapatába.\n\nÜdvözlettel,\nA Sonaweb csapata`
-      userHtmlBody = `
-        <p style="margin: 0 0 16px 0;">Köszönjük a jelentkezésedet a Sonaweb csapatába.</p>
-        <p style="margin: 0 0 16px 0;">Megkaptuk a bemutatkozásodat és az elérhetőségeidet:</p>
-        <div style="background-color: #1a1a1a; padding: 16px; border-left: 3px solid #BF2234; border-radius: 0 6px 6px 0; margin-bottom: 24px; font-style: italic; color: #a3a3a3;">
-          "${message || 'Nem adtál meg külön leírást.'}"
+      userHtmlContent = `
+        <p style="${labelStyle}">Jelentkezés beérkezett</p>
+        <h1 style="${h1Style}">Szia ${name}!</h1>
+        <p style="${pStyle}">Köszönjük a jelentkezésedet a Sonaweb csapatába. Profilodat rögzítettük a rendszerünkben.</p>
+        
+        <div style="${boxStyle}">
+          <p style="${labelStyle}">Bemutatkozásod</p>
+          <p style="margin: 0; font-size: 16px; color: #ffffff; font-style: italic;">"${message || 'Nem adtál meg külön leírást.'}"</p>
         </div>
-        <p style="margin: 0;">Átnézzük a profilodat, és amennyiben van nyitott, hozzád illő lehetőségünk, felvesszük veled a kapcsolatot a megadott e-mail címen.</p>
+
+        <p style="${pStyle}">Átnézzük az anyagodat, és amint van a profilodhoz illő nyitott pozíciónk, felvesszük veled a kapcsolatot.</p>
       `
     } else if (flowType === 'message') {
       userSubject = `Üzeneted megérkezett — ${name}`
       userMessageBody = `Szia ${name}!\n\nKöszönjük a megkeresést, az üzeneted sikeresen megérkezett hozzánk.\n\nÜdvözlettel,\nA Sonaweb csapata`
-      userHtmlBody = `
-        <p style="margin: 0 0 16px 0;">Köszönjük a megkeresést, az üzeneted sikeresen megérkezett hozzánk:</p>
-        <div style="background-color: #1a1a1a; padding: 16px; border-left: 3px solid #BF2234; border-radius: 0 6px 6px 0; margin-bottom: 24px; font-style: italic; color: #a3a3a3;">
-          "${message || ''}"
+      userHtmlContent = `
+        <p style="${labelStyle}">Kapcsolatfelvétel</p>
+        <h1 style="${h1Style}">Szia ${name}!</h1>
+        <p style="${pStyle}">Köszönjük a megkeresést, az üzeneted sikeresen megérkezett hozzánk.</p>
+        
+        <div style="${boxStyle}">
+          <p style="${labelStyle}">Üzeneted</p>
+          <p style="margin: 0; font-size: 16px; color: #ffffff; font-style: italic;">"${message || 'Nincs szöveges üzenet.'}"</p>
         </div>
-        <p style="margin: 0;">Hamarosan átnézzük a kérdésedet, és e-mailben válaszolunk.</p>
+
+        <p style="${pStyle}">Hamarosan átnézzük a kérdésedet, és a megadott e-mail címen válaszolunk.</p>
       `
     } else {
       userSubject = `Projekt részletek rögzítve — ${name}`
       userMessageBody = `Szia ${name}!\n\nKöszönjük a megkeresést. A projekt részleteit rögzítettük.\n\nÜdvözlettel,\nA Sonaweb csapata`
       
       const htmlServicesList = services && services.length > 0
-        ? `<ul style="margin: 0 0 24px 0; padding-left: 20px; color: #ffffff;">
-            ${services.map((s: any) => `<li style="margin-bottom: 8px;"><strong>${s.category}:</strong>${s.items.length > 0 ? s.items.join(', ') : 'Általános'}</li>`).join('')}
-           </ul>`
+        ? `<div style="margin-bottom: 24px;">
+            <p style="${labelStyle}">Érdeklődési körök</p>
+            <ul style="margin: 0; padding-left: 20px; color: #ffffff; font-size: 15px; line-height: 1.6;">
+              ${services.map((s: any) => `<li style="margin-bottom: 6px;"><strong>${s.category}:</strong> <span style="color: #a3a3a3;">${s.items.length > 0 ? s.items.join(', ') : 'Általános'}</span></li>`).join('')}
+            </ul>
+           </div>`
         : ''
 
-      userHtmlBody = `
-        <p style="margin: 0 0 24px 0;">Köszönjük a megkeresést. A projekt részleteit rögzítettük a rendszerünkben:</p>
+      userHtmlContent = `
+        <p style="${labelStyle}">Projekt indítása</p>
+        <h1 style="${h1Style}">Szia ${name}!</h1>
+        <p style="${pStyle}">Köszönjük a megkeresést. A projekt részleteit rögzítettük, a csapatunk hamarosan feldolgozza az adatokat.</p>
         
-        ${htmlServicesList}
+        <div style="${boxStyle}">
+          ${htmlServicesList}
+          
+          <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+              <td width="50%" valign="top">
+                <p style="${labelStyle}">Időzítés</p>
+                <p style="margin: 0; font-size: 16px; color: #ffffff; font-weight: 500;">${timeline || 'Rugalmas'}</p>
+              </td>
+              <td width="50%" valign="top">
+                <p style="${labelStyle}">Költségkeret</p>
+                <p style="margin: 0; font-size: 16px; color: #ffffff; font-weight: 500;">${budget || 'Megbeszélés tárgya'}</p>
+              </td>
+            </tr>
+          </table>
 
-        <div style="background-color: #1a1a1a; border: 1px solid #2a2a2a; padding: 20px; border-radius: 8px; margin-bottom: 24px;">
-          <p style="margin: 0 0 12px 0; font-size: 15px; color: #a3a3a3;"><strong>Időzítés:</strong> <span style="color: #ffffff;">${timeline || 'Rugalmas'}</span></p>
-          <p style="margin: 0; font-size: 15px; color: #a3a3a3;"><strong>Költségkeret:</strong> <span style="color: #ffffff;">${budget || 'Megbeszélés tárgya'}</span></p>
+          ${message ? `
+          <div style="margin-top: 24px; padding-top: 24px; border-top: 1px solid #1f1f1f;">
+            <p style="${labelStyle}">Kiegészítő információk</p>
+            <p style="margin: 0; font-size: 15px; color: #a3a3a3; font-style: italic;">"${message}"</p>
+          </div>` : ''}
         </div>
 
-        ${message ? `
-        <p style="margin: 0 0 8px 0; color: #a3a3a3; font-size: 14px;">Üzenet / Kiegészítés:</p>
-        <div style="background-color: #1a1a1a; padding: 16px; border-radius: 6px; margin-bottom: 24px; color: #e5e5e5; font-size: 15px;">
-          "${message}"
-        </div>` : ''}
-
-        <p style="margin: 0;">Hamarosan átnézzük a specifikációt, és felvesszük veled a kapcsolatot.</p>
+        <p style="${pStyle}">Amíg felvesszük veled a kapcsolatot, nézz szét a kiemelt munkáink között.</p>
+        
+        <table border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td align="center" style="border-radius: 50px;" bgcolor="#ffffff">
+              <a href="https://sonaweb.hu/#work" style="${buttonStyle}">Kiemelt munkáink</a>
+            </td>
+          </tr>
+        </table>
       `
     }
 
@@ -150,11 +184,11 @@ export async function POST(req: Request) {
       from: 'SONAWEB. <hello@sonaweb.hu>', // <--- Cseréld ki a verified domainedre
       to: email,
       subject: userSubject,
-      text: userMessageBody, // Fallback
-      html: generateUserEmailHtml(name, userHtmlBody), // Gyönyörű dizájn
+      text: userMessageBody,
+      html: generateEmailWrapper(userHtmlContent),
     })
 
-    // 3. Belső értesítő e-mail neked (Admin)
+    // 3. Belső értesítő e-mail neked (Admin - ez is dark mode-ban!)
     if (process.env.ADMIN_EMAIL) {
       const adminSubject = flowType === 'team'
         ? `[CSAPAT] Új jelentkező: ${name}`
@@ -162,25 +196,39 @@ export async function POST(req: Request) {
         ? `[ÜZENET] Új megkeresés: ${name}`
         : `[PROJEKT] ${name} — ${budget || 'Nincs keret'}`
 
-      const adminHtmlBody = `
-        <p><strong>Név:</strong> ${name}</p>
-        <p><strong>E-mail:</strong> <a href="mailto:${email}">${email}</a></p>
-        <p><strong>Telefon:</strong> ${phone || 'Nincs megadva'}</p>
-        ${timeline ? `<p><strong>Időzítés:</strong> ${timeline}</p>` : ''}
-        ${budget ? `<p><strong>Keret:</strong> ${budget}</p>` : ''}
-        ${services && services.length > 0 ? `<p><strong>Szolgáltatások:</strong></p><ul>${services.map((s: any) => `<li>${s.category}: ${s.items.join(', ')}</li>`).join('')}</ul>` : ''}
-        <p><strong>Üzenet:</strong></p>
-        <blockquote style="border-left: 4px solid #e5e7eb; padding-left: 16px; color: #4b5563; background: #f3f4f6; padding: 12px; border-radius: 4px;">
-          ${message || 'Nincs szöveges üzenet'}
-        </blockquote>
+      const adminHtmlContent = `
+        <p style="${labelStyle}">Új beérkező lead</p>
+        <h1 style="${h1Style}">${flowType.toUpperCase()}</h1>
+        
+        <div style="${boxStyle}; border-color: #BF2234;">
+          <p style="${labelStyle}">Ügyfél adatai</p>
+          <p style="margin: 0 0 8px 0; color: #ffffff;"><strong>Név:</strong> ${name}</p>
+          <p style="margin: 0 0 8px 0; color: #ffffff;"><strong>E-mail:</strong> <a href="mailto:${email}" style="color: #BF2234;">${email}</a></p>
+          <p style="margin: 0 0 24px 0; color: #ffffff;"><strong>Telefon:</strong> ${phone || 'Nincs megadva'}</p>
+
+          ${timeline ? `<p style="margin: 0 0 8px 0; color: #ffffff;"><strong>Időzítés:</strong> ${timeline}</p>` : ''}
+          ${budget ? `<p style="margin: 0 0 24px 0; color: #ffffff;"><strong>Keret:</strong> ${budget}</p>` : ''}
+          
+          ${services && services.length > 0 ? `
+            <p style="${labelStyle}">Szolgáltatások</p>
+            <ul style="margin: 0 0 24px 0; padding-left: 20px; color: #a3a3a3; font-size: 14px;">
+              ${services.map((s: any) => `<li style="margin-bottom: 4px;">${s.category}: ${s.items.join(', ')}</li>`).join('')}
+            </ul>
+          ` : ''}
+
+          <p style="${labelStyle}">Üzenet</p>
+          <p style="margin: 0; font-size: 15px; color: #a3a3a3; font-style: italic;">"${message || 'Nincs szöveges üzenet'}"</p>
+        </div>
+
+        <p style="font-size: 12px; color: #606060;">Firestore ID: ${leadRef.id}</p>
       `
 
       await resend.emails.send({
-        from: 'Sonaweb Leads <onboarding@resend.dev>', // Ezt is átírhatod, ha már megvan a domained
+        from: 'Sonaweb Leads <onboarding@resend.dev>', // Ha megvan a domain, ezt is átírhatod
         to: process.env.ADMIN_EMAIL,
         subject: adminSubject,
         text: `Új megkeresés érkezett: ${name}`,
-        html: generateAdminEmailHtml(adminSubject, adminHtmlBody, leadRef.id),
+        html: generateEmailWrapper(adminHtmlContent),
       })
     }
 
