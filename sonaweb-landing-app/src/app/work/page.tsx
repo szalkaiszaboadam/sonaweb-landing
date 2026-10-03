@@ -17,28 +17,28 @@ const WORKS = [
     category: 'WEBFEJLESZTÉS', 
     year: '2024', 
     image: '/dukay-winery-1.webp', 
-    link: '/work/dukay-winery' 
+    link: '#' 
   },
   { 
     title: 'SOL CAR', 
     category: 'HIRDETÉSKEZELÉS', 
     year: '2023', 
     image: '/solcar-1.webp', 
-    link: '/work/sol-car' 
+    link: '#' 
   },
   { 
     title: 'GÁZGÉPKER', 
-    category: 'WEBFEJLESZTÉS', 
+    category: 'WEBFEJLESZTÉS',
     year: '2024', 
     image: '/gazgepker-2.webp', 
-    link: '/work/gazgepker' 
+    link: '#' 
   },
   { 
     title: 'CARL COZMO', 
     category: 'MÁRKASTRATÉGIA', 
     year: '2024', 
     image: '/carl-cozmo-3.webp', 
-    link: '/work/carl-cozmo' 
+    link: '#' 
   },
   { 
     title: 'AEROPRODUKT ZRT.', 
@@ -46,42 +46,42 @@ const WORKS = [
     year: '2024', 
     image: '/aeroprodukt-2.mp4', 
     isVideo: true,
-    link: '/work/aeroprodukt' 
+    link: '#' 
   },
   { 
     title: 'FRÖCCSTERASZ', 
     category: 'HIRDETÉSKEZELÉS', 
     year: '2023', 
     image: '/dukay-winery-2.webp', 
-    link: '/work/froccsterasz' 
+    link: '#' 
   },
   { 
     title: 'TÜRKIZ BUDAPEST', 
     category: 'TARTALOMGYÁRTÁS', 
     year: '2023', 
     image: '/carl-cozmo-2.webp', 
-    link: '/work/turkiz-budapest' 
+    link: '#' 
   },
   { 
     title: 'BORI TANYA', 
     category: 'MÁRKASTRATÉGIA', 
     year: '2023', 
     image: '/solcar-1.webp', 
-    link: '/work/bori-tanya' 
+    link: '#' 
   },
   { 
     title: 'TTMBIO', 
     category: 'WEBFEJLESZTÉS', 
     year: '2024', 
     image: '/gazgepker-1.webp', 
-    link: '/work/ttmbio' 
+    link: '#' 
   },
   { 
     title: 'JUHOS GÉPBÉR', 
     category: 'HIRDETÉSKEZELÉS', 
     year: '2024', 
     image: '/dukay-winery-1.webp', 
-    link: '/work/juhos-gepber' 
+    link: '#' 
   }
 ]
 

@@ -200,7 +200,7 @@ export function Services() {
           className="mb-14 flex justify-center md:mb-20 md:justify-start"
         >
           <span className="font-inter text-[14px] md:text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#606060]">
-            Miben segítünk?
+            Szolgáltatásaink
           </span>
         </motion.div>
 
@@ -301,7 +301,6 @@ export function Services() {
 }
 
 
-
 export function AboutSection() {
   return (
     <section id="about" className="relative z-10 w-full bg-[#0a0a0a] py-20 md:py-28 lg:py-36 overflow-hidden" data-theme="dark">
@@ -312,24 +311,25 @@ export function AboutSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.5 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="mb-6 block font-inter text-[13px] md:text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#606060] md:mb-8 md:text-[13px]"
+            className="mb-6 block font-inter text-[13px] md:text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#606060] md:mb-8"
           >
-            Rólunk
+            A SONAWEB
           </motion.span>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="mx-auto w-full max-w-6xl font-display text-[clamp(1.75rem,8vw,88px)] font-extrabold uppercase leading-[1.1] tracking-[-1px] text-white md:tracking-[-3px] break-words"
+            className="mx-auto w-full max-w-[1320px] font-display text-[clamp(1.75rem,6.8vw,96px)] font-extrabold uppercase leading-[1.02] tracking-[-1px] text-white md:tracking-[-3px] text-balance break-words"
           >
-            Sosem csak egy weboldal. A Te márkád a mi meg&shy;szállott&shy;ságunk – minden pixelben ott vagyunk.
+            Hiszünk abban, hogy minden vállalkozás mögött van egy történet, amit érdemes jól elmesélni.
           </motion.h2>
         </div>
       </div>
     </section>
   )
 }
+
 
 const PROJECTS2 = [
   { title: 'DUKAY WINERY', image: '/dukay-winery-1.webp', link: '/work/#' },
@@ -414,7 +414,7 @@ export function SelectedWork() {
           className="mb-14 flex justify-center md:mb-20 md:justify-start"
         >
           <span className="font-inter text-[14px] leading-[14px] tracking-[-0.4px] font-semibold uppercase text-[#606060]">
-            Amikkel bizonyítottunk
+            Kiemelt munkáink 
           </span>
         </motion.div>
 
@@ -544,9 +544,9 @@ export default function HomePage() {
                 hidden: { opacity: 0, y: 30 },
                 show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
               }}
-              className="text-left font-display text-[clamp(3rem,8vw,110px)] font-extrabold uppercase leading-[1.0] tracking-[-1.5px] text-white"
+              className="text-left font-display text-[clamp(1.75rem,8vw,88px)] font-extrabold uppercase leading-[1] tracking-[-3px] text-white"
             >
-              Vágjunk<br />bele!
+              Csináljunk valami<br />igazán ütőst
             </motion.h2>
 
             <div className="flex max-w-[360px] flex-col items-start gap-6 md:items-end md:text-right">
@@ -557,7 +557,7 @@ export default function HomePage() {
                 }}
                 className="font-inter text-[18px] leading-[1.6] text-white"
               >
-                Kérjen azonnali, kötelezettségmentes árajánlatot két perces kérdőívünk segítségével.
+                Weboldal, márka, marketing, tartalom: mondja el, mit akar, és mi megcsináljuk. 
               </motion.p>
 
               <motion.div
